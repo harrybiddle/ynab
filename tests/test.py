@@ -1,6 +1,11 @@
+import sys
+import os
 import unittest
-import ynab
-import natwest_com as natwest
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../ynab/')))
+
+from ynab import ynab
+from ynab import natwest_com as natwest
 
 _ID = '1234768965'
 _PIN = '9750'

@@ -54,7 +54,7 @@ def wait_until_ofx_file_in_dir(dir):
     return glob(g)[0]
 
 
-def main(argv):
+def main():
     secret = parse_secret_text_from_user()
     temp_download_dir = make_temp_download_dir()
     driver = chrome_driver(temp_download_dir)
@@ -72,4 +72,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    sys.exit(main())
