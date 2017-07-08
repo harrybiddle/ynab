@@ -13,6 +13,13 @@ from os import path
 
 here = path.abspath(path.dirname(__file__))
 
+import unittest
+
+def test_suite():
+    test_loader = unittest.TestLoader()
+    test_suite = test_loader.discover('tests', pattern='test*.py')
+    return test_suite
+
 # Get the long description from the README file
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
@@ -109,4 +116,6 @@ setup(
             'ynab=ynab:main',
         ],
     },
+
+    test_suite='setup.test_suite',
 )

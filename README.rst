@@ -6,8 +6,7 @@ then upload them to YouNeedABudget.com.
 
 To run tests:
 
-	pip install --user -r requirements.txt
-	python tests/test.py
+	python setup.py test
 
 To install locally:
 
