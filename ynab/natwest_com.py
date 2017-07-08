@@ -2,7 +2,7 @@ from selenium.webdriver.support.ui import Select
 
 
 def _go_to_website(driver):
-    driver.get('https://www.nwolb.com');
+    driver.get('https://www.nwolb.com')
 
 
 def _switch_to_security_frame(driver):
@@ -26,7 +26,8 @@ def _select_characters(secret, texts_requesting_pin_digits,
         string = unicode.encode('ascii', 'ignore')
         return int(filter(str.isdigit, string)) - 1
     pin_digits = map(extract_int_minus_one, texts_requesting_pin_digits)
-    password_chars = map(extract_int_minus_one, texts_requesting_password_chars)
+    password_chars = map(extract_int_minus_one,
+                         texts_requesting_password_chars)
     return (''.join(map(secret.pin.__getitem__, pin_digits)),
             ''.join(map(secret.natwest_password.__getitem__, password_chars)))
 
@@ -79,7 +80,7 @@ def _navigate_to_downloads_page(driver):
     _switch_to_security_frame(driver)
     driver.find_element_by_xpath('//*[text()="Statements"]') \
           .click()
-    i = 'ctl00_mainContent_SS1AALDAnchor' # Download/export transactions
+    i = 'ctl00_mainContent_SS1AALDAnchor'  # Download/export transactions
     driver.find_element_by_id(i) \
           .click()
 

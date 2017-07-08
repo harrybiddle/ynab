@@ -1,8 +1,6 @@
-import sys
 import os
+import sys
 import unittest
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../ynab/')))
 
 from ynab import ynab
 from ynab import natwest_com as natwest
@@ -42,5 +40,3 @@ class TestSelectCharacters(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-

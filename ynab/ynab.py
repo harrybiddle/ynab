@@ -28,8 +28,8 @@ def parse_secret(semicolon_separated_text):
 
 def parse_secret_text_from_user():
     ''' Prompts the user to enter the secret text and returns their entry'''
-    sys.stdout.write ('Enter a comma-separated list of customer number, pin, '
-                      'natwest password, email, YNAB password: ')
+    sys.stdout.write('Enter a comma-separated list of customer number, pin, '
+                     'natwest password, email, YNAB password: ')
     user_input = getpass()
     return parse_secret(user_input)
 
@@ -40,7 +40,7 @@ def make_temp_download_dir():
 
 
 def chrome_driver(temp_download_dir):
-    options = webdriver.chrome.options.Options();
+    options = webdriver.chrome.options.Options()
     prefs = {'download.default_directory': temp_download_dir}
     options.add_experimental_option('prefs', prefs)
     return webdriver.Chrome(chrome_options=options)
