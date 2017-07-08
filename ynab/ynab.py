@@ -47,6 +47,11 @@ def chrome_driver(temp_download_dir):
 
 
 def wait_until_ofx_file_in_dir(dir):
+    ''' Waits for _WAIT_FOR_OFX_DOWNLOAD_SECONDS seconds until a
+    *.ofx file exists in the given directory. When it does, returns
+    the full file path to that file, or the first file if there are
+    many
+    '''
     g = os.path.join(dir, '*.ofx')
     poll(lambda: glob(g),
          timeout=_WAIT_FOR_OFX_DOWNLOAD_SECONDS,
