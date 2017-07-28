@@ -1,9 +1,12 @@
 import os
 import sys
 import unittest
+import tempfile
 
 from ynab import ynab
 from ynab import natwest_com as natwest
+
+import website_mock as wm
 
 _ID = '1234768965'
 _PIN = '9750'
@@ -37,6 +40,12 @@ class TestSelectCharacters(unittest.TestCase):
         a, b = natwest._select_characters(secret, pin_digits, password_chars)
         self.assertEqual(a, _PIN[3] + _PIN[1] + _PIN[2])
         self.assertEqual(b, _PASSWORD1[4] + _PASSWORD1[6] + _PASSWORD1[9])
+
+class TestWebsiteMock(unittest.TestCase):
+    def test_empty_schema_raises(self):
+        with self.assertRaises(ValueError):
+            wm.WebsiteMock.verify_schema([])
+
 
 if __name__ == '__main__':
     unittest.main()

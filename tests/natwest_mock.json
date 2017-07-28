@@ -1,0 +1,40 @@
+[
+  {
+    // login page that asks for customer number
+    "id": "login1",
+    "elements": [
+      {"name": "ctl00$mainContent$LI5TABA$DBID_edit", "href": "login2"},
+    ]
+  },
+  {
+    // login page that asks for pin and password
+    "id": "login2",
+    "elements": [
+      // text fields that request specific digits of the pin number
+      {"id": "ctl00_mainContent_Tab1_LI6DDALALabel", "text": "2" },
+      {"id": "ctl00_mainContent_Tab1_LI6DDALBLabel", "text": "2" },
+      {"id": "ctl00_mainContent_Tab1_LI6DDALCLabel", "text": "2" },
+      // text fields that request specific characters of the password
+      {"id": "ctl00_mainContent_Tab1_LI6DDALDLabel", "text": "2" },
+      {"id": "ctl00_mainContent_Tab1_LI6DDALELabel", "text": "2" },
+      {"id": "ctl00_mainContent_Tab1_LI6DDALFLabel", "text": "2" },
+      // entry box for pin digits
+      {"name": "ctl00$mainContent$Tab1$LI6PPEA_edit"},
+      {"name": "ctl00$mainContent$Tab1$LI6PPEB_edit"},
+      {"name": "ctl00$mainContent$Tab1$LI6PPEC_edit"},
+      // entry box for password characters
+      {"name": "ctl00$mainContent$Tab1$LI6PPED_edit"},
+      {"name": "ctl00$mainContent$Tab1$LI6PPEE_edit"},
+      {"name": "ctl00$mainContent$Tab1$LI6PPEF_edit"},
+      // sign in button
+      {"name": "ctl00$mainContent$Tab1$next_text_button_button", "href": "overview"},
+    ]
+  },
+  {
+    // welcome screen after login
+    "id": "overview",
+    "elements": [
+      {"xpath": "//*[text()=\"Statements\"]", "href": "statements"}
+    ]
+  },
+]
