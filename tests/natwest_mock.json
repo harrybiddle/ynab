@@ -1,3 +1,5 @@
+// Contains a model of the Natwest website, intended for use with WebsiteMock.
+// If the real Natwest website changes, we should change this model to match.
 [
   {
     // login page that asks for customer number

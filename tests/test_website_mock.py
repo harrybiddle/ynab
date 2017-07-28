@@ -76,38 +76,35 @@ class TestWebsiteDefinition(unittest.TestCase):
         self.assertEqual(element, found_element)
 
 
-class TestWebsiteMock(unittest.TestCase):
+class TestDriver(unittest.TestCase):
     def test_current_page_is_starting_page(self):
-        w = wm.WebsiteMock.fromjson([{'page_id': 'foo', 'start': True},
-                                     {'page_id': 'bar'}])
+        w = wm.Driver.fromjson([page_json('foo', True),
+                                page_json('bar')])
         self.assertEqual('foo', w.current_page())
 
     def test_find_element_by_name(self):
         element = {'name': 'button', 'key': 'value'}
-        w = wm.WebsiteMock.fromjson([{'page_id': 'foo', 'start': True,
-                                      'elements': [element]}])
+        w = wm.Driver.fromjson([page_json('foo', True, [element])])
         found_element = w.find_element_by_name('button')
         self.assertEqual(element, found_element.contents)
 
     def test_find_element_by_id(self):
         element = {'id': 'button', 'key': 'value'}
-        w = wm.WebsiteMock.fromjson([{'page_id': 'foo', 'start': True,
-                                      'elements': [element]}])
+        w = wm.Driver.fromjson([page_json('foo', True, [element])])
         found_element = w.find_element_by_id('button')
         self.assertEqual(element, found_element.contents)
 
     def test_find_element_by_xpath(self):
         xpath = '\\*[text()="Statements"]'
         element = {'xpath': xpath, 'key': 'value'}
-        w = wm.WebsiteMock.fromjson([{'page_id': 'foo', 'start': True,
-                                      'elements': [element]}])
+        w = wm.Driver.fromjson([page_json('foo', True, [element])])
         found_element = w.find_element_by_xpath(xpath)
         self.assertEqual(element, found_element.contents)
 
     def test_clicking_on_element_changes_current_page(self):
         elements = [{'name': 'button', 'href': 'bar'}]
-        w = wm.WebsiteMock.fromjson([page_json('foo', True, elements),
-                                     page_json('bar')])
+        w = wm.Driver.fromjson([page_json('foo', True, elements),
+                                page_json('bar')])
         el = w.find_element_by_name('button')
         el.click()
         self.assertEqual('bar', w.current_page())

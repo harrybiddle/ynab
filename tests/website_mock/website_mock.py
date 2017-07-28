@@ -1,3 +1,24 @@
+''' This module is intended to mock out Selenium, by replacing a real
+webpage through Chrome, with a mocked JSON model of one. The JSON model
+consists of a list of 'pages', each of which have multiple 'elements':
+
+    {
+      "page_id": "first_page",
+      "elements": [
+        {"name": "my_link", "href": "second_page"}
+      ]
+    },
+      {
+        "page_id": "second_page"
+      },
+     ...
+
+Exactly one page should contain the key 'start', which designates that it
+is the first page to be loaded.
+
+You can pass this JSON model to the 'Driver' class, and use it as selenium's
+Driver. There is a lot of missing functionality here, it's just the bare bones.
+'''
 
 import commentjson
 
@@ -105,7 +126,7 @@ class Element():
         self.click()
 
 
-class WebsiteMock():
+class Driver():
     @classmethod
     def fromfile(cls, json_filename):
         with open(json_filename) as file:
