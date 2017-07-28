@@ -8,6 +8,7 @@ _HREF_KEY = 'href'
 _NAME_KEY = 'name'
 _ID_KEY = 'id'
 _XPATH_KEY = 'xpath'
+_TEXT_KEY = 'text'
 
 class SchemaException(Exception):
     def __init__(self, cause):
@@ -78,11 +79,18 @@ class Element():
     def __init__(self, website, element):
         self._website = website
         self.contents = element
+        self.text = element[_TEXT_KEY] if _TEXT_KEY in element else None
 
     def click(self):
         if _HREF_KEY in self.contents:
             target_page_id = self.contents[_HREF_KEY]
             self._website.set_current_page(target_page_id)
+
+    def send_keys(self, _):
+        pass
+
+    def submit(self):
+        self.click()
 
 
 class WebsiteMock():

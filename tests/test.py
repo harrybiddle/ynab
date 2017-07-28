@@ -142,12 +142,37 @@ class TestWebsiteMock(unittest.TestCase):
         self.assertEqual('bar', w.current_page())
 
 
+class TestElement(unittest.TestCase):
+    def test_element_text_is_none_if_no_test(self):
+        el = wm.Element(None, {})
+        self.assertEqual(None, el.text)
+
+    def test_element_text_extracted(self):
+        el = wm.Element(None, {'text': 'foo'})
+        self.assertEqual('foo', el.text)
+
+
+## natwest tests
+
+natwest_mock = os.path.join(os.path.dirname(__file__), 'natwest_mock.json')
+
 class TestNatwestWebsiteDefinition(unittest.TestCase):
     def test_natwest_definition_valid(self):
-        natwest_mock = os.path.join(os.path.dirname(__file__), 'natwest_mock.json')
         with open(natwest_mock) as file:
             js = commentjson.load(file)
             wm.WebsiteDefinition(js)
+
+class TestNatwest(unittest.TestCase):
+    def test_download_transactions(self):
+        secret = ynab.Secret(_ID, _PIN, _PASSWORD1, _EMAIL, _PASSWORD2)
+        driver = wm.WebsiteMock.fromfile(natwest_mock)
+        natwest.download_transactions(secret, driver)
+
+
+
+def parse_secret(semicolon_separated_text):
+    return Secret(*semicolon_separated_text.split(';'))
+
 
 if __name__ == '__main__':
     unittest.main()
