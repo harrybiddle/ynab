@@ -5,6 +5,7 @@ _START_PAGE_KEY = 'start'
 _PAGE_ID_KEY = 'page_id'
 _ELEMENTS_KEY = 'elements'
 _HREF_KEY = 'href'
+_NAME_KEY = 'name'
 
 class SchemaException(Exception):
     def __init__(self, cause):
@@ -46,6 +47,19 @@ class WebsiteDefinition():
         assert (len(start_pages) == 1)
         return start_pages[0][_PAGE_ID_KEY]
 
+    @staticmethod
+    def find_element_in_page(page, key, identifier):
+        if _ELEMENTS_KEY in page:
+            ret = []
+            for element in page[_ELEMENTS_KEY]:
+                if key in element and element[key] == identifier:
+                    ret.append(element)
+            if len(ret) == 0:
+                raise KeyError(key)
+            return ret[0]
+        else:
+            raise KeyError('No elements in page')
+
     def get_page(self, page_id):
         return self.pages[page_id]
 
@@ -56,6 +70,17 @@ class WebsiteDefinition():
             WebsiteDefinition.verify_hrefs_exist(self.pages, self.start_page)
         except Exception as e:
             raise SchemaException(e)
+
+
+class Element():
+    def __init__(self, website, element):
+        self._website = website
+        self._element = element
+
+    def click(self):
+        if _HREF_KEY in self._element:
+            target_page_id = self._element[_HREF_KEY]
+            self._website.set_current_page(target_page_id)
 
 
 class WebsiteMock():
@@ -74,5 +99,16 @@ class WebsiteMock():
         self.definition = definition
         self._current_page = self.definition.get_page(self.definition.start_page)
 
+    def set_current_page(self, new_page_id):
+        self._current_page = self.definition.get_page(new_page_id)
+
     def current_page(self):
         return self._current_page[_PAGE_ID_KEY]
+
+    def find_element_by_name(self, name):
+        ''' Returns an object that, when clicked, updates this driver
+        '''
+        page = self._current_page
+        element = WebsiteDefinition.find_element_in_page(page, _NAME_KEY, name)
+        return Element(self, element)
+

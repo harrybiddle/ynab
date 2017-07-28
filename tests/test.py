@@ -88,12 +88,35 @@ class TestWebsiteDefinition(unittest.TestCase):
         self.assertEqual('foo', d.start_page)
         self.assertEqual(page, d.get_page('foo'))
 
+    def test_raise_key_error_when_no_elements(self):
+        page = {}
+        with self.assertRaises(KeyError):
+            wm.WebsiteDefinition.find_element_in_page(page, 'name', 'foo')
+
+    def test_raise_key_error_when_no_elements_matching(self):
+        page = {'elements': [{}]}
+        with self.assertRaises(KeyError):
+            wm.WebsiteDefinition.find_element_in_page(page, 'name', 'foo')
+
+    def test_return_element(self):
+        element = {'name': 'foo', 'key': 'value'}
+        page = {'elements': [element]}
+        found_element = wm.WebsiteDefinition.find_element_in_page(page, 'name', 'foo')
+        self.assertEqual(element, found_element)
 
 class TestWebsiteMock(unittest.TestCase):
     def test_current_page_is_starting_page(self):
         w = wm.WebsiteMock.fromjson([{'page_id': 'foo', 'start': True},
                                      {'page_id': 'bar'}])
         self.assertEqual('foo', w.current_page())
+
+    def test_clicking_on_element_changes_current_page(self):
+        w = wm.WebsiteMock.fromjson([{'page_id': 'foo', 'start': True,
+                                      'elements': [{'name': 'button', 'href': 'bar'}]},
+                                     {'page_id': 'bar'}])
+        el = w.find_element_by_name('button')
+        el.click()
+        self.assertEqual('bar', w.current_page())
 
 
 class TestNatwestWebsiteDefinition(unittest.TestCase):
