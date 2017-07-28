@@ -60,16 +60,19 @@ class WebsiteDefinition():
 
 class WebsiteMock():
     @classmethod
-    def fromfile(json_filename):
+    def fromfile(cls, json_filename):
         with open(json_filename) as file:
             js = commentjson.load(file)
-            return WebsiteMock.fromjson(js)
+            return cls.fromjson(js)
 
     @classmethod
-    def fromjson(json_object):
+    def fromjson(cls, json_object):
         definition = WebsiteDefinition(json_object)
-        return WebsiteMock(definition)
+        return cls(definition)
 
-    def init(self, definition):
+    def __init__(self, definition):
         self.definition = definition
-        self.current_page = self.definition.get_page(self.definition.start_page_id)
+        self._current_page = self.definition.get_page(self.definition.start_page)
+
+    def current_page(self):
+        return self._current_page[_PAGE_ID_KEY]

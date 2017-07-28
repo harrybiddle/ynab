@@ -89,6 +89,13 @@ class TestWebsiteDefinition(unittest.TestCase):
         self.assertEqual(page, d.get_page('foo'))
 
 
+class TestWebsiteMock(unittest.TestCase):
+    def test_current_page_is_starting_page(self):
+        w = wm.WebsiteMock.fromjson([{'page_id': 'foo', 'start': True},
+                                     {'page_id': 'bar'}])
+        self.assertEqual('foo', w.current_page())
+
+
 class TestNatwestWebsiteDefinition(unittest.TestCase):
     def test_natwest_definition_valid(self):
         natwest_mock = os.path.join(os.path.dirname(__file__), 'natwest_mock.json')
