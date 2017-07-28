@@ -51,7 +51,7 @@ class TestWebsiteDefinition(unittest.TestCase):
             wm.WebsiteDefinition.verify_schema([{'start_page': 'foo1'},
                                                 {'start_page': 'foo2'},
                                                 {'page_id': 'foo1'},
-                                                {'page_id': 'foo2'}])        
+                                                {'page_id': 'foo2'}])
 
     def test_succeeds_when_starting_id_exists(self):    
         wm.WebsiteDefinition.verify_schema([{'start_page': 'foo'},
@@ -64,5 +64,9 @@ class TestWebsiteDefinition(unittest.TestCase):
                                                 {'page_id': 'bar'},
                                                 {'page_id': 'bar'}])        
 
+    def test_start_page_extracted(self):    
+        d = wm.WebsiteDefinition([{'start_page': 'foo'},
+                                  {'page_id': 'foo'}])
+        self.assertEqual('foo', d.start_page)
 if __name__ == '__main__':
     unittest.main()

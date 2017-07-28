@@ -20,11 +20,8 @@ class WebsiteDefinition():
             raise SchemaException()
         return start_page_id
 
-    def init(self, json_object):
-        self.start_page, self.pages = self.verify_schema(json_object)
-
-    def start_page(self):
-        return self._contents
+    def __init__(self, json_object):
+        self.start_page = self.verify_schema(json_object)
 
 class WebsiteMock():
     @classmethod
