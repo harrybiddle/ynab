@@ -151,6 +151,12 @@ class TestElement(unittest.TestCase):
         el = wm.Element(None, {'text': 'foo'})
         self.assertEqual('foo', el.text)
 
+    def test_send_keys(self):
+        element = {}
+        el = wm.Element(None, element)
+        el.send_keys('foo')
+        self.assertEqual('foo', element['input'])
+
 
 ## natwest tests
 

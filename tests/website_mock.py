@@ -92,8 +92,8 @@ class Element():
             target_page_id = self.contents[_HREF_KEY]
             self._website.set_current_page(target_page_id)
 
-    def send_keys(self, _):
-        pass
+    def send_keys(self, keys):
+        self.contents['input'] = keys
 
     def submit(self):
         self.click()
