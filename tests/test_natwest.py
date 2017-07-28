@@ -15,6 +15,7 @@ _PASSWORD2 = 'myothercrazypas8s'
 
 natwest_mock = os.path.join(os.path.dirname(__file__), 'natwest_mock.json')
 
+
 class TestSelectCharacters(unittest.TestCase):
     def test_happy_path(self):
         secret = ynab.Secret(_ID, _PIN, _PASSWORD1, _EMAIL, _PASSWORD2)

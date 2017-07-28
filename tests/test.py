@@ -25,67 +25,77 @@ class TestSecret(unittest.TestCase):
         self.assertEqual(s.ynab_password, _PASSWORD2)
 
 
+def page_json(id, start=False, elements=None):
+    ''' Constructs a JSON blob that represents a mocked website page '''
+    ret = {'page_id': id}
+    if start:
+        ret['start'] = True
+    if elements is not None:
+        ret['elements'] = elements
+    return ret
+
 
 class TestWebsiteDefinition(unittest.TestCase):
+    wd = wm.WebsiteDefinition
+
     def test_empty_schema_raises(self):
         with self.assertRaises(wm.SchemaException):
-            wm.WebsiteDefinition([])
+            self.wd([])
 
     def test_fails_when_more_than_one_start_page(self):
         with self.assertRaises(wm.SchemaException):
-            wm.WebsiteDefinition([{'page_id': 'foo1', 'start': True},
-                                  {'page_id': 'foo2', 'start': True}])
-
+            self.wd([page_json('foo1', True),
+                     page_json('foo2', True)])
 
     def test_fails_when_page_ids_not_unique(self):
         with self.assertRaises(wm.SchemaException):
-            wm.WebsiteDefinition([{'page_id': 'foo', 'start': True},
-                                                {'page_id': 'foo'}])
+            self.wd([page_json('foo', True),
+                     page_json('foo')])
 
     def test_fails_when_element_points_to_non_existant_page(self):
+        elements = [{'href': 'non-existing'}]
         with self.assertRaises(wm.SchemaException):
-            wm.WebsiteDefinition([{'page_id': 'foo', 'start': True,
-                                   'elements': [{'href': 'non-existing'}]}])
+            self.wd([page_json('foo', True, elements)])
 
     def test_suceeds_when_element_points_to_existing_page(self):
-        wm.WebsiteDefinition([{'page_id': 'foo', 'start': True,
-                               'elements': [{'href': 'bar'}]},
-                               {'page_id': 'bar'}])
+        elements = [{'href': 'bar'}]
+        self.wd([page_json('foo', True, elements),
+                 page_json('bar')])
 
     def test_fails_when_second_element_points_to_non_existant_page(self):
+        foo_elements = [{'href': 'bar'}]
+        bar_elements = [{'href': 'baz'}]
         with self.assertRaises(wm.SchemaException):
-            wm.WebsiteDefinition([{'page_id': 'foo', 'start': True,
-                                   'elements': [{'href': 'bar'}]},
-                                  {'page_id': 'bar',
-                                   'elements': [{'href': 'baz'}]}])
+            self.wd([page_json('foo', True, foo_elements),
+                     page_json('bar', elements=bar_elements)])
 
     def test_suceeds_when_second_element_points_to_existing_page(self):
-        wm.WebsiteDefinition([{'page_id': 'foo', 'start': True,
-                               'elements': [{'href': 'bar'}]},
-                              {'page_id': 'bar',
-                               'elements': [{'href': 'baz'}]},
-                              {'page_id': 'baz'}])
+        foo_elements = [{'href': 'bar'}]
+        bar_elements = [{'href': 'baz'}]
+        self.wd([page_json('foo', True, foo_elements),
+                 page_json('bar', elements=bar_elements),
+                 page_json('baz')])
 
     def test_start_page_extracted(self):
-        page = {'page_id': 'foo', 'start': True, 'key': 'value'}
-        d = wm.WebsiteDefinition([page])
+        page = page_json('foo', True)
+        d = self.wd([page])
         self.assertEqual('foo', d.start_page)
         self.assertEqual(page, d.get_page('foo'))
 
     def test_raise_key_error_when_no_elements(self):
         page = {}
         with self.assertRaises(KeyError):
-            wm.WebsiteDefinition.find_element_in_page(page, 'name', 'foo')
+            self.wd.find_element_in_page(page, 'name', 'foo')
 
     def test_raise_key_error_when_no_elements_matching(self):
         page = {'elements': [{}]}
         with self.assertRaises(KeyError):
-            wm.WebsiteDefinition.find_element_in_page(page, 'name', 'foo')
+            self.wd.find_element_in_page(page, 'name', 'foo')
 
     def test_return_element(self):
         element = {'name': 'foo', 'key': 'value'}
         page = {'elements': [element]}
-        found_element = wm.WebsiteDefinition.find_element_in_page(page, 'name', 'foo')
+        found_element = self.wd.find_element_in_page(page, 'name', 'foo')
         self.assertEqual(element, found_element)
 
 
@@ -118,9 +128,9 @@ class TestWebsiteMock(unittest.TestCase):
         self.assertEqual(element, found_element.contents)
 
     def test_clicking_on_element_changes_current_page(self):
-        w = wm.WebsiteMock.fromjson([{'page_id': 'foo', 'start': True,
-                                      'elements': [{'name': 'button', 'href': 'bar'}]},
-                                     {'page_id': 'bar'}])
+        elements = [{'name': 'button', 'href': 'bar'}]
+        w = wm.WebsiteMock.fromjson([page_json('foo', True, elements),
+                                     page_json('bar')])
         el = w.find_element_by_name('button')
         el.click()
         self.assertEqual('bar', w.current_page())

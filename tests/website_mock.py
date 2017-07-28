@@ -10,11 +10,13 @@ _ID_KEY = 'id'
 _XPATH_KEY = 'xpath'
 _TEXT_KEY = 'text'
 
+
 class SchemaException(Exception):
     def __init__(self, cause):
         msg = 'Failed to parse schema, caused by ' + repr(cause)
         super(SchemaException, self).__init__(msg)
         self.cause = cause
+
 
 class WebsiteDefinition():
     @staticmethod
@@ -27,7 +29,8 @@ class WebsiteDefinition():
             for element in start_page[_ELEMENTS_KEY]:
                 if _HREF_KEY in element:
                     target_id = element[_HREF_KEY]
-                    targets = [el for el in pages.values() if el[_PAGE_ID_KEY] == target_id]
+                    targets = filter(lambda el: el[_PAGE_ID_KEY] == target_id,
+                                     pages.values())
                     assert (len(targets) == 1)
                     WebsiteDefinition.verify_hrefs_exist(pages, target_id)
 
@@ -68,11 +71,13 @@ class WebsiteDefinition():
 
     def __init__(self, json_object):
         try:
-            self.pages = WebsiteDefinition.get_unique_pages(json_object)
-            self.start_page = WebsiteDefinition.get_unique_start_page_id(self.pages.values())
-            WebsiteDefinition.verify_hrefs_exist(self.pages, self.start_page)
+            wd = WebsiteDefinition
+            self.pages = wd.get_unique_pages(json_object)
+            self.start_page = wd.get_unique_start_page_id(self.pages.values())
+            wd.verify_hrefs_exist(self.pages, self.start_page)
         except Exception as e:
             raise SchemaException(e)
+
 
 class Select():
     def __init__(self, _):
@@ -80,6 +85,7 @@ class Select():
 
     def select_by_visible_text(self, _):
         pass
+
 
 class Element():
     def __init__(self, website, element):
@@ -113,7 +119,8 @@ class WebsiteMock():
 
     def __init__(self, definition):
         self.definition = definition
-        self._current_page = self.definition.get_page(self.definition.start_page)
+        start_page = self.definition.start_page
+        self._current_page = self.definition.get_page(start_page)
 
     def set_current_page(self, new_page_id):
         self._current_page = self.definition.get_page(new_page_id)
@@ -123,18 +130,18 @@ class WebsiteMock():
 
     def find_element_by_name(self, name):
         page = self._current_page
-        element = WebsiteDefinition.find_element_in_page(page, _NAME_KEY, name)
-        return Element(self, element)
+        e = WebsiteDefinition.find_element_in_page(page, _NAME_KEY, name)
+        return Element(self, e)
 
     def find_element_by_xpath(self, xpath):
         page = self._current_page
-        element = WebsiteDefinition.find_element_in_page(page, _XPATH_KEY, xpath)
-        return Element(self, element)
+        e = WebsiteDefinition.find_element_in_page(page, _XPATH_KEY, xpath)
+        return Element(self, e)
 
     def find_element_by_id(self, id):
         page = self._current_page
-        element = WebsiteDefinition.find_element_in_page(page, _ID_KEY, id)
-        return Element(self, element)
+        e = WebsiteDefinition.find_element_in_page(page, _ID_KEY, id)
+        return Element(self, e)
 
     def get(self, _):
         pass
@@ -144,4 +151,3 @@ class WebsiteMock():
 
     def switch_to_frame(self, _):
         pass
-
