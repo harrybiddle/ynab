@@ -122,3 +122,12 @@ class WebsiteMock():
         element = WebsiteDefinition.find_element_in_page(page, _ID_KEY, id)
         return Element(self, element)
 
+    def get(self, _):
+        pass
+
+    def switch_to_default_content(self):
+        pass
+
+    def switch_to_frame(self, _):
+        pass
+
