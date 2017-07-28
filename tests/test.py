@@ -125,6 +125,14 @@ class TestWebsiteMock(unittest.TestCase):
         found_element = w.find_element_by_id('button')
         self.assertEqual(element, found_element.contents)
 
+    def test_find_element_by_xpath(self):
+        xpath = '\\*[text()="Statements"]'
+        element = {'xpath': xpath, 'key': 'value'}
+        w = wm.WebsiteMock.fromjson([{'page_id': 'foo', 'start': True,
+                                      'elements': [element]}])
+        found_element = w.find_element_by_xpath(xpath)
+        self.assertEqual(element, found_element.contents)
+
     def test_clicking_on_element_changes_current_page(self):
         w = wm.WebsiteMock.fromjson([{'page_id': 'foo', 'start': True,
                                       'elements': [{'name': 'button', 'href': 'bar'}]},

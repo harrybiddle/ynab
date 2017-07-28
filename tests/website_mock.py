@@ -7,6 +7,7 @@ _ELEMENTS_KEY = 'elements'
 _HREF_KEY = 'href'
 _NAME_KEY = 'name'
 _ID_KEY = 'id'
+_XPATH_KEY = 'xpath'
 
 class SchemaException(Exception):
     def __init__(self, cause):
@@ -56,7 +57,7 @@ class WebsiteDefinition():
                 if key in element and element[key] == identifier:
                     ret.append(element)
             if len(ret) == 0:
-                raise KeyError(key)
+                raise KeyError(key + ': ' + identifier)
             return ret[0]
         else:
             raise KeyError('No elements in page')
@@ -109,6 +110,11 @@ class WebsiteMock():
     def find_element_by_name(self, name):
         page = self._current_page
         element = WebsiteDefinition.find_element_in_page(page, _NAME_KEY, name)
+        return Element(self, element)
+
+    def find_element_by_xpath(self, xpath):
+        page = self._current_page
+        element = WebsiteDefinition.find_element_in_page(page, _XPATH_KEY, xpath)
         return Element(self, element)
 
     def find_element_by_id(self, id):
