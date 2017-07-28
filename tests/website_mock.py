@@ -6,6 +6,7 @@ _PAGE_ID_KEY = 'page_id'
 _ELEMENTS_KEY = 'elements'
 _HREF_KEY = 'href'
 _NAME_KEY = 'name'
+_ID_KEY = 'id'
 
 class SchemaException(Exception):
     def __init__(self, cause):
@@ -75,11 +76,11 @@ class WebsiteDefinition():
 class Element():
     def __init__(self, website, element):
         self._website = website
-        self._element = element
+        self.contents = element
 
     def click(self):
-        if _HREF_KEY in self._element:
-            target_page_id = self._element[_HREF_KEY]
+        if _HREF_KEY in self.contents:
+            target_page_id = self.contents[_HREF_KEY]
             self._website.set_current_page(target_page_id)
 
 
@@ -106,9 +107,12 @@ class WebsiteMock():
         return self._current_page[_PAGE_ID_KEY]
 
     def find_element_by_name(self, name):
-        ''' Returns an object that, when clicked, updates this driver
-        '''
         page = self._current_page
         element = WebsiteDefinition.find_element_in_page(page, _NAME_KEY, name)
+        return Element(self, element)
+
+    def find_element_by_id(self, id):
+        page = self._current_page
+        element = WebsiteDefinition.find_element_in_page(page, _ID_KEY, id)
         return Element(self, element)
 

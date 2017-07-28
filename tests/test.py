@@ -104,11 +104,26 @@ class TestWebsiteDefinition(unittest.TestCase):
         found_element = wm.WebsiteDefinition.find_element_in_page(page, 'name', 'foo')
         self.assertEqual(element, found_element)
 
+
 class TestWebsiteMock(unittest.TestCase):
     def test_current_page_is_starting_page(self):
         w = wm.WebsiteMock.fromjson([{'page_id': 'foo', 'start': True},
                                      {'page_id': 'bar'}])
         self.assertEqual('foo', w.current_page())
+
+    def test_find_element_by_name(self):
+        element = {'name': 'button', 'key': 'value'}
+        w = wm.WebsiteMock.fromjson([{'page_id': 'foo', 'start': True,
+                                      'elements': [element]}])
+        found_element = w.find_element_by_name('button')
+        self.assertEqual(element, found_element.contents)
+
+    def test_find_element_by_id(self):
+        element = {'id': 'button', 'key': 'value'}
+        w = wm.WebsiteMock.fromjson([{'page_id': 'foo', 'start': True,
+                                      'elements': [element]}])
+        found_element = w.find_element_by_id('button')
+        self.assertEqual(element, found_element.contents)
 
     def test_clicking_on_element_changes_current_page(self):
         w = wm.WebsiteMock.fromjson([{'page_id': 'foo', 'start': True,
