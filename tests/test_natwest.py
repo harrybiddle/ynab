@@ -1,9 +1,11 @@
 import os
-import sys
 import unittest
+import commentjson
 
 from ynab import ynab
 from ynab import natwest_com as natwest
+
+import website_mock as wm
 
 _ID = '1234768965'
 _PIN = '9750'
@@ -11,16 +13,7 @@ _PASSWORD1 = 'mycrazyp!asswithatleasttencharacters'
 _EMAIL = 'who@you.com'
 _PASSWORD2 = 'myothercrazypas8s'
 
-
-class TestSecret(unittest.TestCase):
-    def test_valid_construction(self):
-        secret_text = ';'.join([_ID, _PIN, _PASSWORD1, _EMAIL, _PASSWORD2])
-        s = ynab.parse_secret(secret_text)
-        self.assertEqual(s.customer_number, _ID)
-        self.assertEqual(s.pin, _PIN)
-        self.assertEqual(s.natwest_password, _PASSWORD1)
-        self.assertEqual(s.email, _EMAIL)
-        self.assertEqual(s.ynab_password, _PASSWORD2)
+natwest_mock = os.path.join(os.path.dirname(__file__), 'natwest_mock.json')
 
 
 class TestSelectCharacters(unittest.TestCase):
@@ -37,6 +30,21 @@ class TestSelectCharacters(unittest.TestCase):
         a, b = natwest._select_characters(secret, pin_digits, password_chars)
         self.assertEqual(a, _PIN[3] + _PIN[1] + _PIN[2])
         self.assertEqual(b, _PASSWORD1[4] + _PASSWORD1[6] + _PASSWORD1[9])
+
+
+class TestNatwestWebsiteModel(unittest.TestCase):
+    def test_natwest_definition_valid(self):
+        with open(natwest_mock) as file:
+            js = commentjson.load(file)
+            wm.WebsiteModel(js)
+
+
+class TestNatwest(unittest.TestCase):
+    def test_download_transactions(self):
+        secret = ynab.Secret(_ID, _PIN, _PASSWORD1, _EMAIL, _PASSWORD2)
+        driver = wm.Driver.fromfile(natwest_mock)
+        natwest.download_transactions(secret, driver, select=wm.Select)
+
 
 if __name__ == '__main__':
     unittest.main()
