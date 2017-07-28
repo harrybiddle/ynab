@@ -44,29 +44,47 @@ class TestSelectCharacters(unittest.TestCase):
 class TestWebsiteDefinition(unittest.TestCase):
     def test_empty_schema_raises(self):
         with self.assertRaises(wm.SchemaException):
-            wm.WebsiteDefinition.verify_schema([])
+            wm.WebsiteDefinition([])
 
     def test_fails_when_more_than_one_start_page(self):
         with self.assertRaises(wm.SchemaException):
-            wm.WebsiteDefinition.verify_schema([{'start_page': 'foo1'},
-                                                {'start_page': 'foo2'},
-                                                {'page_id': 'foo1'},
-                                                {'page_id': 'foo2'}])
+            wm.WebsiteDefinition([{'page_id': 'foo1', 'start': True},
+                                  {'page_id': 'foo2', 'start': True}])
 
-    def test_succeeds_when_starting_id_exists(self):    
-        wm.WebsiteDefinition.verify_schema([{'start_page': 'foo'},
-                                            {'page_id': 'foo'}])
 
-    def test_fails_when_page_ids_not_unique(self):  
-        with self.assertRaises(wm.SchemaException):  
-            wm.WebsiteDefinition.verify_schema([{'start_page': 'foo'},
-                                                {'page_id': 'foo'},
-                                                {'page_id': 'bar'},
-                                                {'page_id': 'bar'}])        
+    def test_fails_when_page_ids_not_unique(self):
+        with self.assertRaises(wm.SchemaException):
+            wm.WebsiteDefinition([{'page_id': 'foo', 'start': True},
+                                                {'page_id': 'foo'}])
 
-    def test_start_page_extracted(self):    
-        d = wm.WebsiteDefinition([{'start_page': 'foo'},
-                                  {'page_id': 'foo'}])
+    def test_fails_when_element_points_to_non_existant_page(self):
+        with self.assertRaises(wm.SchemaException):
+            wm.WebsiteDefinition([{'page_id': 'foo', 'start': True,
+                                   'elements': [{'href': 'non-existing'}]}])
+
+    def test_suceeds_when_element_points_to_existing_page(self):
+        with self.assertRaises(wm.SchemaException):
+            wm.WebsiteDefinition([{'page_id': 'foo', 'start': True,
+                                   'elements': [{'href': 'bar'}]},
+                                   {'page_id': 'bar'}])
+
+    def test_fails_when_second_element_points_to_non_existant_page(self):
+        with self.assertRaises(wm.SchemaException):
+            wm.WebsiteDefinition([{'page_id': 'foo', 'start': True,
+                                   'elements': [{'href': 'bar'}]},
+                                  {'page_id': 'bar',
+                                   'elements': [{'href': 'baz'}]}])
+
+    def test_suceeds_when_second_element_points_to_existing_page(self):
+        with self.assertRaises(wm.SchemaException):
+            wm.WebsiteDefinition([{'page_id': 'foo', 'start': True,
+                                   'elements': [{'href': 'bar'}]},
+                                  {'page_id': 'bar',
+                                   'elements': [{'href': 'baz'}]},
+                                  {'page_id': 'baz'}])
+
+    def test_start_page_extracted(self):
+        d = wm.WebsiteDefinition([{'page_id': 'foo', 'start': True}])
         self.assertEqual('foo', d.start_page)
 if __name__ == '__main__':
     unittest.main()
