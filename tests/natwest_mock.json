@@ -2,8 +2,9 @@
   {
     // login page that asks for customer number
     "page_id": "login1",
+    "start": true,
     "elements": [
-      {"name": "ctl00$mainContent$LI5TABA$DBID_edit", "href": "login2"},
+      {"name": "ctl00$mainContent$LI5TABA$DBID_edit", "href": "login2"}
     ]
   },
   {
@@ -27,14 +28,17 @@
       {"name": "ctl00$mainContent$Tab1$LI6PPEE_edit"},
       {"name": "ctl00$mainContent$Tab1$LI6PPEF_edit"},
       // sign in button
-      {"name": "ctl00$mainContent$Tab1$next_text_button_button", "href": "overview"},
+      {"name": "ctl00$mainContent$Tab1$next_text_button_button", "href": "overview"}
     ]
   },
   {
     // welcome screen after login
     "page_id": "overview",
     "elements": [
-      {"xpath": "//*[text()=\"Statements\"]", "href": "statements"}
+      {"xpath": "\/\/*[text()=\"Statements\"]", "href": "statements"}
     ]
   },
+  {
+    "page_id": "statements"
+  }
 ]

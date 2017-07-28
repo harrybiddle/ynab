@@ -1,7 +1,7 @@
 import os
 import sys
 import unittest
-import tempfile
+import commentjson
 
 from ynab import ynab
 from ynab import natwest_com as natwest
@@ -41,6 +41,7 @@ class TestSelectCharacters(unittest.TestCase):
         self.assertEqual(a, _PIN[3] + _PIN[1] + _PIN[2])
         self.assertEqual(b, _PASSWORD1[4] + _PASSWORD1[6] + _PASSWORD1[9])
 
+
 class TestWebsiteDefinition(unittest.TestCase):
     def test_empty_schema_raises(self):
         with self.assertRaises(wm.SchemaException):
@@ -63,10 +64,9 @@ class TestWebsiteDefinition(unittest.TestCase):
                                    'elements': [{'href': 'non-existing'}]}])
 
     def test_suceeds_when_element_points_to_existing_page(self):
-        with self.assertRaises(wm.SchemaException):
-            wm.WebsiteDefinition([{'page_id': 'foo', 'start': True,
-                                   'elements': [{'href': 'bar'}]},
-                                   {'page_id': 'bar'}])
+        wm.WebsiteDefinition([{'page_id': 'foo', 'start': True,
+                               'elements': [{'href': 'bar'}]},
+                               {'page_id': 'bar'}])
 
     def test_fails_when_second_element_points_to_non_existant_page(self):
         with self.assertRaises(wm.SchemaException):
@@ -76,18 +76,25 @@ class TestWebsiteDefinition(unittest.TestCase):
                                    'elements': [{'href': 'baz'}]}])
 
     def test_suceeds_when_second_element_points_to_existing_page(self):
-        with self.assertRaises(wm.SchemaException):
-            wm.WebsiteDefinition([{'page_id': 'foo', 'start': True,
-                                   'elements': [{'href': 'bar'}]},
-                                  {'page_id': 'bar',
-                                   'elements': [{'href': 'baz'}]},
-                                  {'page_id': 'baz'}])
+        wm.WebsiteDefinition([{'page_id': 'foo', 'start': True,
+                               'elements': [{'href': 'bar'}]},
+                              {'page_id': 'bar',
+                               'elements': [{'href': 'baz'}]},
+                              {'page_id': 'baz'}])
 
     def test_start_page_extracted(self):
         page = {'page_id': 'foo', 'start': True, 'key': 'value'}
         d = wm.WebsiteDefinition([page])
         self.assertEqual('foo', d.start_page)
         self.assertEqual(page, d.get_page('foo'))
+
+
+class TestNatwestWebsiteDefinition(unittest.TestCase):
+    def test_natwest_definition_valid(self):
+        natwest_mock = os.path.join(os.path.dirname(__file__), 'natwest_mock.json')
+        with open(natwest_mock) as file:
+            js = commentjson.load(file)
+            wm.WebsiteDefinition(js)
 
 if __name__ == '__main__':
     unittest.main()
