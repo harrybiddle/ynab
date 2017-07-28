@@ -32,11 +32,11 @@ class TestSelectCharacters(unittest.TestCase):
         self.assertEqual(b, _PASSWORD1[4] + _PASSWORD1[6] + _PASSWORD1[9])
 
 
-class TestNatwestWebsiteDefinition(unittest.TestCase):
+class TestNatwestWebsiteModel(unittest.TestCase):
     def test_natwest_definition_valid(self):
         with open(natwest_mock) as file:
             js = commentjson.load(file)
-            wm.WebsiteDefinition(js)
+            wm.WebsiteModel(js)
 
 
 class TestNatwest(unittest.TestCase):

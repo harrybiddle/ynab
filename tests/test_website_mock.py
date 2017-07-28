@@ -12,8 +12,8 @@ def page_json(id, start=False, elements=None):
     return ret
 
 
-class TestWebsiteDefinition(unittest.TestCase):
-    wd = wm.WebsiteDefinition
+class TestWebsiteModel(unittest.TestCase):
+    wd = wm.WebsiteModel
 
     def test_empty_schema_raises(self):
         with self.assertRaises(wm.SchemaException):
