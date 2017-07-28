@@ -1,14 +1,14 @@
 [
   {
     // login page that asks for customer number
-    "id": "login1",
+    "page_id": "login1",
     "elements": [
       {"name": "ctl00$mainContent$LI5TABA$DBID_edit", "href": "login2"},
     ]
   },
   {
     // login page that asks for pin and password
-    "id": "login2",
+    "page_id": "login2",
     "elements": [
       // text fields that request specific digits of the pin number
       {"id": "ctl00_mainContent_Tab1_LI6DDALALabel", "text": "2" },
@@ -32,7 +32,7 @@
   },
   {
     // welcome screen after login
-    "id": "overview",
+    "page_id": "overview",
     "elements": [
       {"xpath": "//*[text()=\"Statements\"]", "href": "statements"}
     ]

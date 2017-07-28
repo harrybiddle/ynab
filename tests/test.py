@@ -41,11 +41,28 @@ class TestSelectCharacters(unittest.TestCase):
         self.assertEqual(a, _PIN[3] + _PIN[1] + _PIN[2])
         self.assertEqual(b, _PASSWORD1[4] + _PASSWORD1[6] + _PASSWORD1[9])
 
-class TestWebsiteMock(unittest.TestCase):
+class TestWebsiteDefinition(unittest.TestCase):
     def test_empty_schema_raises(self):
-        with self.assertRaises(ValueError):
-            wm.WebsiteMock.verify_schema([])
+        with self.assertRaises(wm.SchemaException):
+            wm.WebsiteDefinition.verify_schema([])
 
+    def test_fails_when_more_than_one_start_page(self):
+        with self.assertRaises(wm.SchemaException):
+            wm.WebsiteDefinition.verify_schema([{'start_page': 'foo1'},
+                                                {'start_page': 'foo2'},
+                                                {'page_id': 'foo1'},
+                                                {'page_id': 'foo2'}])        
+
+    def test_succeeds_when_starting_id_exists(self):    
+        wm.WebsiteDefinition.verify_schema([{'start_page': 'foo'},
+                                            {'page_id': 'foo'}])
+
+    def test_fails_when_page_ids_not_unique(self):  
+        with self.assertRaises(wm.SchemaException):  
+            wm.WebsiteDefinition.verify_schema([{'start_page': 'foo'},
+                                                {'page_id': 'foo'},
+                                                {'page_id': 'bar'},
+                                                {'page_id': 'bar'}])        
 
 if __name__ == '__main__':
     unittest.main()
