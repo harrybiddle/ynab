@@ -84,7 +84,10 @@ class TestWebsiteDefinition(unittest.TestCase):
                                   {'page_id': 'baz'}])
 
     def test_start_page_extracted(self):
-        d = wm.WebsiteDefinition([{'page_id': 'foo', 'start': True}])
+        page = {'page_id': 'foo', 'start': True, 'key': 'value'}
+        d = wm.WebsiteDefinition([page])
         self.assertEqual('foo', d.start_page)
+        self.assertEqual(page, d.get_page('foo'))
+
 if __name__ == '__main__':
     unittest.main()

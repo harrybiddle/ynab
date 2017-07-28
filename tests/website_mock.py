@@ -9,6 +9,9 @@ class SchemaException(Exception):
 class WebsiteDefinition():
     @staticmethod
     def verify_hrefs_exist(pages, start_page_id):
+        ''' Recurses through all pages and asserts that if any element has a href
+        to another page id then that page id exists
+        '''
         start_page = pages[start_page_id]
         if _ELEMENTS_KEY in start_page:
             for element in start_pages[_ELEMENTS_KEY]:
@@ -20,6 +23,9 @@ class WebsiteDefinition():
 
     @staticmethod
     def get_unique_pages(js):
+        ''' Get all valid pages from the JSON object: i.e. dicts that have a page ID
+        Asserts that no two pages share the same page ID
+        '''
         pages = [el for el in js if _PAGE_ID_KEY in el]
         pages_dict = dict([(el[_PAGE_ID_KEY], el) for el in pages])
         assert (len(pages) == len(pages_dict))
@@ -27,9 +33,15 @@ class WebsiteDefinition():
 
     @staticmethod
     def get_unique_start_page_id(pages):
+        ''' In a list of pages, find the starting page and return its page id.
+        Asserts that there is exactly one starting page.
+        '''
         start_pages = [el for el in pages if _START_PAGE_KEY in el]
         assert (len(start_pages) == 1)
         return start_pages[0][_PAGE_ID_KEY]
+
+    def get_page(self, page_id):
+        return self.pages[page_id]
 
     def __init__(self, json_object):
         try:
