@@ -39,6 +39,27 @@
     ]
   },
   {
-    "page_id": "statements"
+    "page_id": "statements",
+    "elements": [
+      // Download/export transactions
+      {"id": "ctl00_mainContent_SS1AALDAnchor", "href": "downloads"}
+    ]
+  },
+  {
+    "page_id": "downloads",
+    "elements": [
+      {"name": "ctl00$mainContent$SS6SPDDA"},
+      {"name": "ctl00$mainContent$SS6SDDDA"},
+      {"name": "ctl00$mainContent$FinishButton_button", "href": "downloads2"}
+    ]
+  },
+  {
+    "page_id": "downloads2",
+    "elements": [
+      {"name": "ctl00$mainContent$SS7-LWLA_button_button", "href": "dialog"}
+    ]
+  },
+  {
+    "page_id": "dialog"
   }
 ]

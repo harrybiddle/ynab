@@ -85,11 +85,11 @@ def _navigate_to_downloads_page(driver):
           .click()
 
 
-def _initiate_download(driver):
-    period = Select(driver.find_element_by_name('ctl00$mainContent$SS6SPDDA'))
+def _initiate_download(driver, select):
+    period = select(driver.find_element_by_name('ctl00$mainContent$SS6SPDDA'))
     period.select_by_visible_text('Last 1 month')
 
-    format = Select(driver.find_element_by_name('ctl00$mainContent$SS6SDDDA'))
+    format = select(driver.find_element_by_name('ctl00$mainContent$SS6SDDDA'))
     format.select_by_visible_text('Microsoft Money (OFX file)')
 
     next = driver.find_element_by_name('ctl00$mainContent$FinishButton_button')
@@ -100,8 +100,8 @@ def _initiate_download(driver):
     download.click()
 
 
-def download_transactions(secret, driver):
+def download_transactions(secret, driver, select=Select):
     _go_to_website(driver)
     _log_in(secret, driver)
     _navigate_to_downloads_page(driver)
-    _initiate_download(driver)
+    _initiate_download(driver, select)

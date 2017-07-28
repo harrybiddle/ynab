@@ -166,7 +166,7 @@ class TestNatwest(unittest.TestCase):
     def test_download_transactions(self):
         secret = ynab.Secret(_ID, _PIN, _PASSWORD1, _EMAIL, _PASSWORD2)
         driver = wm.WebsiteMock.fromfile(natwest_mock)
-        natwest.download_transactions(secret, driver)
+        natwest.download_transactions(secret, driver, select=wm.Select)
 
 
 

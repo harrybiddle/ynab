@@ -74,6 +74,12 @@ class WebsiteDefinition():
         except Exception as e:
             raise SchemaException(e)
 
+class Select():
+    def __init__(self, _):
+        pass
+
+    def select_by_visible_text(self, _):
+        pass
 
 class Element():
     def __init__(self, website, element):
