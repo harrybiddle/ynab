@@ -22,6 +22,7 @@ class TestSecret(unittest.TestCase):
         self.assertEqual(s.natwest_password, _PASSWORD1)
         self.assertEqual(s.ynab_password, _PASSWORD2)
 
+
 class TestConfig(unittest.TestCase):
     def _create_source(self, id=None):
         some_valid_type = ynab._SOURCE_TYPES.keys()[0]

@@ -101,7 +101,7 @@ def main(argv):
     # For now, only support exactly one source and one target #################
     # TODO expand on this
     source_configs = config['sources']
-    _ = construct_source_objects(source_configs) # unused for now
+    _ = construct_source_objects(source_configs)  # unused for now
     assert(len(source_configs) == 1)
     assert('ynab' in config)
     ynab_config = config['ynab']
