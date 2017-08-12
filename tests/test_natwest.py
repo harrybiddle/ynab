@@ -10,7 +10,6 @@ import website_mock as wm
 _ID = '1234768965'
 _PIN = '9750'
 _PASSWORD1 = 'mycrazyp!asswithatleasttencharacters'
-_EMAIL = 'who@you.com'
 _PASSWORD2 = 'myothercrazypas8s'
 
 natwest_mock = os.path.join(os.path.dirname(__file__), 'natwest_mock.json')
@@ -18,7 +17,7 @@ natwest_mock = os.path.join(os.path.dirname(__file__), 'natwest_mock.json')
 
 class TestSelectCharacters(unittest.TestCase):
     def test_happy_path(self):
-        secret = ynab.Secret(_ID, _PIN, _PASSWORD1, _EMAIL, _PASSWORD2)
+        secret = ynab.Secret(_ID, _PIN, _PASSWORD1, _PASSWORD2)
 
         pin_digits = ['Enter the 4th number',
                       'Enter the 2nd number',
@@ -41,7 +40,7 @@ class TestNatwestWebsiteModel(unittest.TestCase):
 
 class TestNatwest(unittest.TestCase):
     def test_download_transactions(self):
-        secret = ynab.Secret(_ID, _PIN, _PASSWORD1, _EMAIL, _PASSWORD2)
+        secret = ynab.Secret(_ID, _PIN, _PASSWORD1, _PASSWORD2)
         driver = wm.Driver.fromfile(natwest_mock)
         natwest.download_transactions(secret, driver, select=wm.Select)
 
