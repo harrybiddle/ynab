@@ -18,5 +18,3 @@ To install locally:
 
     python setup.py bdist_wheel
     pip install dist/ynab*.whl
-
-
