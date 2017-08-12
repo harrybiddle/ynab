@@ -88,10 +88,13 @@ def construct_source_objects(configs):
     return map(construct_object, configs)
 
 
-def main(argv):
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+
     parser = argparse.ArgumentParser()
     parser.add_argument('configuration_file', type=argparse.FileType('r'))
-    args = parser.parse_args(argv[1:])
+    args = parser.parse_args(argv)
 
     loaded_config = yaml.load(args.configuration_file)
     config = parse_config(loaded_config)
@@ -129,4 +132,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    main()
