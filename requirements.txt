@@ -3,3 +3,4 @@ polling
 pep8
 commentjson
 schema
+pyyaml
