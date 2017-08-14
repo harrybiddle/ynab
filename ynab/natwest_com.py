@@ -26,8 +26,7 @@ def _select_characters(secret, texts_requesting_pin_digits,
         string = unicode.encode('ascii', 'ignore')
         return int(filter(str.isdigit, string)) - 1
     pin_digits = map(extract_int_minus_one, texts_requesting_pin_digits)
-    password_chars = map(extract_int_minus_one,
-                         texts_requesting_password_chars)
+    password_chars = map(extract_int_minus_one, texts_requesting_password_chars)
     return (''.join(map(secret.pin.__getitem__, pin_digits)),
             ''.join(map(secret.natwest_password.__getitem__, password_chars)))
 
@@ -103,5 +102,5 @@ def _initiate_download(driver, select):
 def download_transactions(secret, driver, select=Select):
     _go_to_website(driver)
     _log_in(secret, driver)
-    _navigate_to_downloads_page(driver)
-    _initiate_download(driver, select)
+    _navigate_to_downloads_page(driver, select)
+    _initiate_download(driver)
