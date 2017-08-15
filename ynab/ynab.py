@@ -44,6 +44,13 @@ def chrome_driver(temp_download_dir):
 def parse_config(config):
     return _CONFIG_SCHEMA.validate(config)
 
+def construct_source_objects(configs):
+    def construct_object(config):
+        source_type = config['type']
+        source_class = _SOURCE_TYPES[source_type]
+        return source_class(config)
+    return map(construct_object, configs)
+
 def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
@@ -53,16 +60,16 @@ def main(argv=None):
     loaded_config = yaml.load(args.configuration_file)
     config = parse_config(loaded_config)
 
-    print "Fetching recent transactions from " + argv.bank[0]
+    print "Fetching recent transactions from " + args.bank[0]
 
     bank = None
-    if (argv.bank[0] == 'amex'):
+    if (args.bank[0] == 'amex'):
         bank = Amex()
-    elif (argv.bank[0] == 'halifax'):
+    elif (args.bank[0] == 'halifax'):
         bank = Halifax()
-    elif (argv.bank[0] == 'hsbc'):
+    elif (args.bank[0] == 'hsbc'):
         bank = HSBC()
-    elif (argv.bank[0] == 'natwest'):
+    elif (args.bank[0] == 'natwest'):
         bank = Natwest()
 
     bank.get_secret_text_from_user()
@@ -100,7 +107,7 @@ def main(argv=None):
         print "Removing the remaints"
         shutil.rmtree(temp_download_dir)
     finally:
-        if not argv.open:
+        if not args.open:
             driver.quit()
         if os.path.exists(temp_download_dir):
             sys.stderr.write(('Temporary directory not removed: {}\n'

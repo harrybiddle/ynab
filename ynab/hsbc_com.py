@@ -1,15 +1,16 @@
 import collections
+import fileutils
 from bank import Bank
 from selenium.webdriver import ActionChains
 
 class HSBC (Bank) :
-    hsbc_secret = collections.namedtuple('Secret', ('hsbc_username hsbc_memorable_question hsbc_security_code ynab_email ynab_password'))
+    hsbc_secret = collections.namedtuple('Secret', ('hsbc_username hsbc_memorable_question hsbc_security_code ynab_password'))
 
     full_name = "HSBC"
     
     def prompt(self):
         print ('Enter a semicolon separated list of hsbc username, '
-               'hsbc memorable question, hsbc security code, ynab email, and ynab password')
+               'hsbc memorable question, hsbc security code, and ynab password')
 
     def parse_secret(self, semicolon_separated_text):
         self.secret = self.hsbc_secret(*semicolon_separated_text.split(';'))
@@ -25,7 +26,7 @@ class HSBC (Bank) :
         self._initiate_download(driver)
 
     def _wait_until_download_complete(self, dir):
-        return self.wait_for_file(dir, '.qfx')
+        return fileutils.wait_for_file(dir, '.qfx')
 
     def _go_to_website(self, driver):
         driver.get('https://www.hsbc.co.uk/')

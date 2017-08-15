@@ -1,15 +1,16 @@
 import collections
+import fileutils
 from bank import Bank
 from selenium.webdriver import ActionChains
 
 class Amex (Bank) :
-    amex_secret = collections.namedtuple('Secret', ('amex_username amex_password ynab_email ynab_password'))
+    amex_secret = collections.namedtuple('Secret', ('amex_username amex_password ynab_password'))
 
     full_name = "American Express"
     
     def prompt(self):
         print ('Enter a semicolon separated list of amex username, '
-               'amex password, ynab email, and ynab password')
+               'amex password, and ynab password')
 
     def parse_secret(self, semicolon_separated_text):
         self.secret = self.amex_secret(*semicolon_separated_text.split(';'))
@@ -25,7 +26,7 @@ class Amex (Bank) :
         self._initiate_download(driver)
 
     def _wait_until_download_complete(self, dir):
-        return self.wait_for_file(dir, '.qfx')
+        return fileutils.wait_for_file(dir, '.qfx')
 
     def _go_to_website(self, driver):
         driver.get('https://www.americanexpress.com/uk/')

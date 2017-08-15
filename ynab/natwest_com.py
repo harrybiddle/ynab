@@ -1,3 +1,5 @@
+import collections
+from bank import Bank
 from selenium.webdriver.support.ui import Select
 
 class Natwest (Bank):
@@ -10,7 +12,7 @@ class Natwest (Bank):
                'natwest pin, natwest password, and ynab password')
 
     def parse_secret(self, semicolon_separated_text):
-        self.secret = self.amex_secret(*semicolon_separated_text.split(';'))
+        self.secret = self.natwest_secret(*semicolon_separated_text.split(';'))
 
     def download_transactions(secret, driver, select=Select):
         _go_to_website(driver)

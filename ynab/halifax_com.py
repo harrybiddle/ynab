@@ -1,4 +1,5 @@
 import collections
+import fileutils
 import re
 import time
 
@@ -6,13 +7,13 @@ from bank import Bank
 from selenium.webdriver import ActionChains
 
 class Halifax (Bank) :
-    halifax_secret = collections.namedtuple('Secret', ('halifax_username halifax_password halifax_challenge ynab_email ynab_password'))
+    halifax_secret = collections.namedtuple('Secret', ('halifax_username halifax_password halifax_challenge ynab_password'))
 
     full_name = "Halifax"
 
     def prompt(self):
         print ('Enter a semicolon separated list of your halifax username, '
-               'halifax password, halifax challenge, ynab email, and ynab password')
+               'halifax password, halifax challenge, and ynab password')
 
     def parse_secret(self, semicolon_separated_text):
         self.secret = self.halifax_secret(*semicolon_separated_text.split(';'))
@@ -30,7 +31,7 @@ class Halifax (Bank) :
         self._initiate_download(driver)
 
     def _wait_until_download_complete(self, dir):
-        return self.wait_for_file_with_prefix(dir, '.qif', '5253030007970668')
+        return fileutils.wait_for_file_with_prefix(dir, '.qif', '5253030007970668')
 
     # Used to invert the sign of transactions in the downloaded files so ynab interprets the transactions correctly
     def _invert_files(self, paths):
