@@ -32,6 +32,7 @@ class Halifax (Bank) :
     def _wait_until_download_complete(self, dir):
         return self.wait_for_file_with_prefix(dir, '.qif', '5253030007970668')
 
+    # Used to invert the sign of transactions in the downloaded files so ynab interprets the transactions correctly
     def _invert_files(self, paths):
         toReturn = []
         for path in paths:

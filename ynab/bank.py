@@ -12,13 +12,13 @@ class Bank:
         user_input = getpass()
         return self.parse_secret(user_input)
 
-    def wait_for_file(self, dir, file_extension):
-        return self._wait_for_file(dir, '*' + file_extension)
+    def wait_for_file(dir, file_extension):
+        return _wait_for_file(dir, '*' + file_extension)
 
-    def wait_for_file_with_prefix(self, dir, file_extension, file_prefix):
-        return self._wait_for_file(dir, file_prefix + '*' + file_extension)
+    def wait_for_file_with_prefix(dir, file_extension, file_prefix):
+        return _wait_for_file(dir, file_prefix + '*' + file_extension)
 
-    def _wait_for_file(self, dir, path):
+    def _wait_for_file(dir, path):
         g = os.path.join(dir, path)
         poll(lambda: glob(g),
              timeout=_WAIT_FOR_FILE_DOWNLOAD_SECONDS,
