@@ -6,7 +6,7 @@ import yaml
 from schema import SchemaError
 
 from ynab import ynab
-from halifax_com import Halifax
+from ynab.halifax_com import Halifax
 import filecmp
 
 _TEST_FILE = 'test.qif'
