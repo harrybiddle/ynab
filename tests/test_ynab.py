@@ -6,10 +6,6 @@ import yaml
 from schema import SchemaError
 
 from ynab import ynab
-from ynab.halifax_com import Halifax
-import filecmp
-
-_TEST_FILE = 'test.qif'
 
 _ID = '1234768965'
 _PIN = '9750'
@@ -57,14 +53,6 @@ class TestConfig(unittest.TestCase):
             as_yaml = yaml.load(f)
         validated_yaml = ynab.parse_config(as_yaml)
         self.assertEqual(as_yaml, validated_yaml)
-
-
-class TestFileInverter(unittest.TestCase):
-    def test_single_entry_invert(self):
-        halifax = Halifax()
-        inverted_file = halifax._invert_files([_TEST_FILE])
-        self.assertTrue(filecmp.cmp(_TEST_FILE, inverted_file[0], shallow=False))
-
 
 if __name__ == '__main__':
     unittest.main()
