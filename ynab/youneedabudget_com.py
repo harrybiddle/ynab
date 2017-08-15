@@ -9,11 +9,11 @@ _WAIT_TIME_FOR_SUCCESSFUL_UPLOAD_SECONDS = 10
 
 
 def _go_to_website(driver):
-    driver.get('https://app.youneedabudget.com/')    
+    driver.get('https://app.youneedabudget.com/')
 
-def _log_in(secret, driver):
+def _log_in(driver, email, secret):
     driver.find_element_by_xpath('//input[@placeholder="email address"]') \
-          .send_keys(secret.ynab_email)
+          .send_keys(email)
 
     driver.find_element_by_xpath('//input[@placeholder="password"]') \
           .send_keys(secret.ynab_password)
@@ -22,13 +22,33 @@ def _log_in(secret, driver):
           .click()
 
 
-def _navigate_to_upload_screen(bank, driver):
-    driver.find_element_by_xpath('//span[text()="' + bank.full_name + '"]') \
-          .click()
+def _navigate_to_upload_screen(driver, budget, account):
+    # choose budget dropdown
+    budget_dropdown = '//button[contains(@class,"button-prefs-budget")]'
+    driver.find_element_by_xpath(budget_dropdown).click()
 
+    # navigate to the list of budgets
+    open_budget = '//*[text()="Open a budget"]'
+    driver.find_element_by_xpath(open_budget).click()
+
+    # find our chosen budget text
+    chosen_budget = ('//button[text()="{}"'
+                     ' and contains(@class,"select-budget")]').format(budget)
+    element = driver.find_element_by_xpath(chosen_budget)
+
+    # get the URL for the budget from the parent and visit it
+    # if we were just to click on the budget text, selenium complains
+    # that another element would actually receive the click
+    parent_element = element.find_element_by_xpath('..')
+    url = parent_element.get_attribute('href')
+    driver.get(url)
+
+    # choosen the right account
+    driver.find_element_by_xpath('//span[text()="{}"]'.format(account)).click()
+
+    # click the import transactions button
     x = '//*[contains(@class,"accounts-toolbar-file-import-transactions")]'
-    driver.find_element_by_xpath(x) \
-          .click()
+    driver.find_element_by_xpath(x).click()
 
 
 def _initiate_upload(driver, path):
@@ -48,12 +68,12 @@ def _wait_until_upload_confirmed_successful(driver):
     driver.find_element_by_xpath('//button[text()="OK"]').click()
 
 
-def upload_transactions(bank, driver, paths):
+def upload_transactions(bank, driver, paths, config, email):
     _go_to_website(driver)
-    _log_in(bank.secret, driver)
+    _log_in(driver, email, bank.secret)
     for path in paths:
         time.sleep(1)
-        _navigate_to_upload_screen(bank, driver)
+        _navigate_to_upload_screen(driver, config['budget'], config['account'])
         time.sleep(1)
         _initiate_upload(driver, path)
         time.sleep(1)
