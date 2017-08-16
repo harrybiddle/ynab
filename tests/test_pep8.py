@@ -21,7 +21,7 @@ def get_all_python_files_in_repository():
 class TestPep8(unittest.TestCase):
     """Run PEP8 on all files from the repository root."""
     def test_pep8(self):
-        style = pep8.StyleGuide()
+        style = pep8.StyleGuide(ignore='E302')
         python_files = get_all_python_files_in_repository()
         result = style.check_files(python_files)
         self.assertEqual(result.total_errors, 0)
