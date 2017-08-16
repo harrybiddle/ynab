@@ -1,9 +1,0 @@
-sources:
-  - type: natwest
-    target_id: 1
-ynab:
-  email: email@domain.com
-  targets:
-    - budget: My Budget
-      account: My Account
-      id: 1
