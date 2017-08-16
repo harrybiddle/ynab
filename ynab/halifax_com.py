@@ -9,7 +9,7 @@ from selenium.webdriver import ActionChains
 class Halifax (Bank) :
     halifax_secret = collections.namedtuple('Secret', ('halifax_username halifax_password halifax_challenge ynab_password'))
 
-    full_name = "Halifax"
+    full_name = 'Halifax'
 
     def prompt(self):
         print ('Enter a semicolon separated list of your halifax username, '
@@ -50,10 +50,10 @@ class Halifax (Bank) :
             toReturn.append(new_file_path)
 
         return toReturn
-    
+
     def _go_to_website(self, driver):
         driver.get('https://www.halifax-online.co.uk')
-        assert "Halifax" in driver.title
+        assert 'Halifax' in driver.title
 
     def _log_in(self, secret, driver):
         user_id = driver.find_element_by_name('frmLogin:strCustomerLogin_userID')
@@ -61,7 +61,7 @@ class Halifax (Bank) :
 
         password = driver.find_element_by_id('frmLogin:strCustomerLogin_pwd')
         password.send_keys(secret.halifax_password)
-    
+
         # click through to log in
         loginButton = driver.find_element_by_id('frmLogin:btnLogin2')
         loginButton.click()
@@ -72,10 +72,10 @@ class Halifax (Bank) :
         # Please enter characters X, Y and Z from your memorable information then
         # click the continue button.\nWe will never ask you to enter your FULL
         # memorable information.\nThis sign in step improves your security.
-        description = driver.find_element_by_class_name("inner").text
+        description = driver.find_element_by_class_name('inner').text
 
         description = description[:34]
-        match = re.match("Please enter characters ([1-8]), ([1-8]) and ([1-8])", description)
+        match = re.match('Please enter characters ([1-8]), ([1-8]) and ([1-8])', description)
 
         indexes = [int(match.group(1)) - 1, int(match.group(2)) - 1, int(match.group(3)) - 1]
         chars = ''.join(map(self.secret.halifax_challenge.__getitem__, indexes))
@@ -84,31 +84,31 @@ class Halifax (Bank) :
             driver.find_element_by_name('frmentermemorableinformation1:strEnterMemorableInformation_memInfo1'),
             driver.find_element_by_name('frmentermemorableinformation1:strEnterMemorableInformation_memInfo2'),
             driver.find_element_by_name('frmentermemorableinformation1:strEnterMemorableInformation_memInfo3')]
-        
+
         for char, selector in zip(chars, challenge_selectors):
             selector.send_keys(char)
 
-        driver.find_element_by_id("frmentermemorableinformation1:btnContinue").click()
-    
+        driver.find_element_by_id('frmentermemorableinformation1:btnContinue').click()
+
     def _navigate_to_downloads_page(self, driver):
-        driver.find_element_by_id("lnkAccFuncs_viewStatement_des-m-sat-xx-1").click()
-       
+        driver.find_element_by_id('lnkAccFuncs_viewStatement_des-m-sat-xx-1').click()
+
     def _initiate_download(self, driver):
         self._get_earlier_page(driver)
         self._get_earlier_page(driver)
 
     def _get_earlier_page(self, driver):
-        earlier_button = driver.find_element_by_id("lnkEarlierBtnMACC")
-        driver.execute_script("arguments[0].scrollIntoView()", earlier_button)
+        earlier_button = driver.find_element_by_id('lnkEarlierBtnMACC')
+        driver.execute_script('arguments[0].scrollIntoView()', earlier_button)
         earlier_button.click()
 
         # wait for it to load
         time.sleep(2)
-        
-        driver.find_element_by_id("lnkExportStatementSSR").click()
+
+        driver.find_element_by_id('lnkExportStatementSSR').click()
 
         # select download mechanic
-        driver.find_element_by_id("export-format").send_keys('p')
+        driver.find_element_by_id('export-format').send_keys('p')
 
-        driver.find_element_by_id("creditcardstatment:ccstmt:export-statement-form:btnExport").click()
-        driver.find_element_by_class_name("overlay-close").click()
+        driver.find_element_by_id('creditcardstatment:ccstmt:export-statement-form:btnExport').click()
+        driver.find_element_by_class_name('overlay-close').click()

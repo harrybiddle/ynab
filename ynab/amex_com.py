@@ -6,8 +6,8 @@ from selenium.webdriver import ActionChains
 class Amex (Bank) :
     amex_secret = collections.namedtuple('Secret', ('amex_username amex_password ynab_password'))
 
-    full_name = "American Express"
-    
+    full_name = 'American Express'
+
     def prompt(self):
         print ('Enter a semicolon separated list of amex username, '
                'amex password, and ynab password')
@@ -30,8 +30,8 @@ class Amex (Bank) :
 
     def _go_to_website(self, driver):
         driver.get('https://www.americanexpress.com/uk/')
-        assert "American Express" in driver.title
-        
+        assert 'American Express' in driver.title
+
         # bypass cookie question
         driver.find_element_by_id('sprite-ContinueButton_EN').click()
 
@@ -41,28 +41,28 @@ class Amex (Bank) :
 
         password = driver.find_element_by_id('Password')
         password.send_keys(self.secret.amex_password)
-    
+
         # click through to log in
         loginButton = driver.find_element_by_id('loginButton')
         loginButton.click()
-        
+
     def _navigate_to_downloads_page(self, driver):
         tab = driver.find_element_by_id('gb_myca_pc_statement')
         export = driver.find_element_by_id('gb_myca_pc_statement_export_statement_data')
-        
+
         action = ActionChains(driver)
         action.move_to_element(tab)
         action.click(export)
         action.perform()
-       
+
     def _initiate_download(self, driver):
         driver.find_element_by_id('quicken').click()
-            
+
         driver.find_element_by_id('select0').click()
-            
+
         # get the latest two statements
         driver.find_element_by_id('checkboxid00').click()
         driver.find_element_by_id('checkboxid01').click()
-        
+
         # kick off the download
         driver.find_element_by_id('myBlueButton1').click()
