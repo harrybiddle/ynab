@@ -14,10 +14,10 @@ class Natwest (Bank):
     def parse_secret(self, semicolon_separated_text):
         self.secret = self.natwest_secret(*semicolon_separated_text.split(';'))
 
-    def download_transactions(secret, driver, select=Select):
+    def download_transactions(secret, driver):
         _go_to_website(driver)
         _log_in(secret, driver)
-        _navigate_to_downloads_page(driver, select)
+        _navigate_to_downloads_page(driver)
         _initiate_download(driver)
 
     def _go_to_website(driver):
@@ -38,12 +38,12 @@ class Natwest (Bank):
                            texts_requesting_password_chars):
         ''' Takes a list of phrases like 'Enter the xth number' that are asking
         for a subset of the pin/password, and returns that subset.'''
-
         def extract_int_minus_one(unicode):
             string = unicode.encode('ascii', 'ignore')
             return int(filter(str.isdigit, string)) - 1
         pin_digits = map(extract_int_minus_one, texts_requesting_pin_digits)
-        password_chars = map(extract_int_minus_one, texts_requesting_password_chars)
+        password_chars = map(extract_int_minus_one,
+                             texts_requesting_password_chars)
         return (''.join(map(secret.pin.__getitem__, pin_digits)),
                 ''.join(map(secret.natwest_password.__getitem__, password_chars)))
 
@@ -80,7 +80,7 @@ class Natwest (Bank):
         for char, box in zip(subpassword, password_text_boxes):
             box.send_keys(char)
 
-            # click through to log in
+        # click through to log in
         next = driver.find_element_by_name(
             'ctl00$mainContent$Tab1$next_text_button_button')
         next.click()
@@ -94,13 +94,14 @@ class Natwest (Bank):
         driver.find_element_by_xpath('//*[text()="Statements"]') \
               .click()
         i = 'ctl00_mainContent_SS1AALDAnchor'  # Download/export transactions
-        driver.find_element_by_id(i).click()
+        driver.find_element_by_id(i) \
+              .click()
 
-    def _initiate_download(driver, select):
-        period = select(driver.find_element_by_name('ctl00$mainContent$SS6SPDDA'))
+    def _initiate_download(driver):
+        period = Select(driver.find_element_by_name('ctl00$mainContent$SS6SPDDA'))
         period.select_by_visible_text('Last 1 month')
 
-        format = select(driver.find_element_by_name('ctl00$mainContent$SS6SDDDA'))
+        format = Select(driver.find_element_by_name('ctl00$mainContent$SS6SDDDA'))
         format.select_by_visible_text('Microsoft Money (OFX file)')
 
         next = driver.find_element_by_name('ctl00$mainContent$FinishButton_button')
@@ -109,3 +110,9 @@ class Natwest (Bank):
         download = driver.find_element_by_name(
             'ctl00$mainContent$SS7-LWLA_button_button')
         download.click()
+
+    def download_transactions(secret, driver):
+        _go_to_website(driver)
+        _log_in(secret, driver)
+        _navigate_to_downloads_page(driver)
+        _initiate_download(driver)
