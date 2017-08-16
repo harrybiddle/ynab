@@ -54,7 +54,7 @@ def construct_source_objects(configs):
 def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
-    parser = getArgParser()
+    parser = get_arg_parser()
     args = parser.parse_args(argv)
 
     loaded_config = yaml.load(args.configuration_file)
@@ -113,7 +113,7 @@ def main(argv=None):
             sys.stderr.write(('Temporary directory not removed: {}\n'
                               .format(temp_download_dir)))
 
-def getArgParser():
+def get_arg_parser():
     parser = argparse.ArgumentParser(description='Pull down and import transaction histories into ynab.')
     parser.add_argument('-b', '--bank', nargs=1, choices=['natwest', 'amex', 'halifax', 'hsbc'], required=True,
                         help='The bank you would like to pull transactions from')
