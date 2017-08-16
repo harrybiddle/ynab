@@ -1,9 +1,11 @@
 import unittest
+import os.path
 
 from ynab.halifax_com import Halifax
 import filecmp
 
-_TEST_FILE = 'test.qif'
+_SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+_TEST_FILE = os.path.join(_SCRIPT_DIR, 'test.qif')
 
 class TestFileInverter(unittest.TestCase):
     def test_single_entry_invert(self):

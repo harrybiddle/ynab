@@ -60,7 +60,7 @@ def main(argv=None):
     loaded_config = yaml.load(args.configuration_file)
     config = parse_config(loaded_config)
 
-    print "Fetching recent transactions from " + args.bank[0]
+    print 'Fetching recent transactions from ' + args.bank[0]
 
     bank = None
     if (args.bank[0] == 'amex'):
@@ -89,22 +89,22 @@ def main(argv=None):
     email = ynab_config['email']
     ###########################################################################
 
-    print "Starting chrome to do your bidding"
+    print 'Starting chrome to do your bidding'
     temp_download_dir = make_temp_download_dir()
     driver = chrome_driver(temp_download_dir)
     driver.implicitly_wait(10)
 
     try:
-        print "Downloading transactions from " + bank.full_name
+        print 'Downloading transactions from ' + bank.full_name
         path = bank.download_transactions(driver, temp_download_dir)
 
-        driver.execute_script('''window.open("about:blank", "_blank");''')
+        driver.execute_script('''window.open('about:blank', '_blank');''')
         driver.switch_to_window(driver.window_handles[1])
 
-        print "Uploading transactions to ynab"
+        print 'Uploading transactions to ynab'
         ynab.upload_transactions(bank, driver, path, target_config, email)
 
-        print "Removing the remaints"
+        print 'Removing the remaints'
         shutil.rmtree(temp_download_dir)
     finally:
         if not args.open:
