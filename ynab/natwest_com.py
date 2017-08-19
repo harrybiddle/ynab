@@ -16,10 +16,10 @@ class Natwest (Bank):
         return self.secret
 
     def download_transactions(self, secret, driver):
-        _go_to_website(driver)
-        _log_in(secret, driver)
-        _navigate_to_downloads_page(driver)
-        _initiate_download(driver)
+        self._go_to_website(driver)
+        self._log_in(secret, driver)
+        self._navigate_to_downloads_page(driver)
+        self._initiate_download(driver)
 
     def _go_to_website(self, driver):
         driver.get('https://www.nwolb.com')
@@ -29,7 +29,7 @@ class Natwest (Bank):
         driver.switch_to_frame('ctl00_secframe')
 
     def _log_in_customer_number(self, secret, driver):
-        _switch_to_security_frame(driver)
+        self._switch_to_security_frame(driver)
         search_box = driver.find_element_by_name(
             'ctl00$mainContent$LI5TABA$DBID_edit')
         search_box.send_keys(secret.customer_number)
@@ -37,7 +37,7 @@ class Natwest (Bank):
 
     def _select_characters(self, secret, texts_requesting_pin_digits,
                            texts_requesting_password_chars):
-        ''' Takes a list of phrases like 'Enter the xth number' that are asking
+        ''' Takes a list of phrases like "Enter the xth number" that are asking
         for a subset of the pin/password, and returns that subset.'''
         def extract_int_minus_one(unicode):
             string = unicode.encode('ascii', 'ignore')
@@ -60,9 +60,9 @@ class Natwest (Bank):
             driver.find_element_by_id('ctl00_mainContent_Tab1_LI6DDALFLabel').text]
 
         # extract the requested info from the secret
-        subpin, subpassword = _select_characters(secret,
-                                                 texts_requesting_pin_digits,
-                                                 texts_requesting_password_chars)
+        subpin, subpassword = self._select_characters(secret,
+                                                      texts_requesting_pin_digits,
+                                                      texts_requesting_password_chars)
 
         # find the text boxes on the page
         pin_text_boxes = [
@@ -87,11 +87,11 @@ class Natwest (Bank):
         next.click()
 
     def _log_in(self, secret, driver):
-        _log_in_customer_number(secret, driver)
-        _log_in_pin_and_password(secret, driver)
+        self._log_in_customer_number(secret, driver)
+        self._log_in_pin_and_password(secret, driver)
 
-    def _navigate_to_downloads_page(driver):
-        _switch_to_security_frame(driver)
+    def _navigate_to_downloads_page(self, driver):
+        self._switch_to_security_frame(driver)
         driver.find_element_by_xpath('//*[text()="Statements"]') \
               .click()
         i = 'ctl00_mainContent_SS1AALDAnchor'  # Download/export transactions
@@ -111,9 +111,3 @@ class Natwest (Bank):
         download = driver.find_element_by_name(
             'ctl00$mainContent$SS7-LWLA_button_button')
         download.click()
-
-    def download_transactions(self, secret, driver):
-        _go_to_website(driver)
-        _log_in(secret, driver)
-        _navigate_to_downloads_page(driver)
-        _initiate_download(driver)

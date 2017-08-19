@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
 import argparse
-import collections
 import os
 import shutil
 import sys
@@ -16,7 +15,7 @@ from halifax_com import Halifax
 from hsbc_com import HSBC
 import youneedabudget_com as ynab
 
-from schema import Schema, And, Or, Use, Optional, SchemaError
+from schema import Schema, And, Or, Optional
 
 _SOURCE_TYPES = {'natwest': lambda x: x}
 
@@ -98,7 +97,7 @@ def main(argv=None):
         print 'Downloading transactions from ' + bank.full_name
         path = bank.download_transactions(driver, temp_download_dir)
 
-        driver.execute_script('''window.open('about:blank', '_blank');''')
+        driver.execute_script('window.open(\'about:blank\', \'_blank\');')
         driver.switch_to_window(driver.window_handles[1])
 
         print 'Uploading transactions to ynab'
@@ -114,12 +113,18 @@ def main(argv=None):
                               .format(temp_download_dir)))
 
 def get_arg_parser():
-    parser = argparse.ArgumentParser(description='Pull down and import transaction histories into ynab.')
-    parser.add_argument('-b', '--bank', nargs=1, choices=['natwest', 'amex', 'halifax', 'hsbc'], required=True,
-                        help='The bank you would like to pull transactions from')
+    parser = argparse.ArgumentParser(description=('Pull down and import '
+                                                  'transaction histories into '
+                                                  'ynab.'))
+    parser.add_argument('-b', '--bank', nargs=1,
+                        choices=['natwest', 'amex', 'halifax', 'hsbc'],
+                        required=True,
+                        help=('The bank you would like to pull transactions '
+                              'from'))
 
     # TODO(jboreiko) not functional currently :(
-    parser.add_argument('-o', '--open', action='store_true', help='If you would like to keep the tabs open')
+    parser.add_argument('-o', '--open', action='store_true',
+                        help='If you would like to keep the tabs open')
     parser.add_argument('configuration_file', type=argparse.FileType('r'))
     return parser
 

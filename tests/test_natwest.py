@@ -1,7 +1,5 @@
-import os
 import unittest
 
-from ynab import ynab
 from ynab import natwest_com as natwest
 
 
@@ -23,7 +21,8 @@ class TestSecret(unittest.TestCase):
 
 class TestSelectCharacters(unittest.TestCase):
     def test_happy_path(self):
-        secret = natwest.Natwest.natwest_secret(_ID, _PIN, _PASSWORD1, _PASSWORD2)
+        secret = natwest.Natwest.natwest_secret(_ID, _PIN,
+                                                _PASSWORD1, _PASSWORD2)
 
         pin_digits = ['Enter the 4th number',
                       'Enter the 2nd number',

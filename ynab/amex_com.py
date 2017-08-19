@@ -3,7 +3,7 @@ import fileutils
 from bank import Bank
 from selenium.webdriver import ActionChains
 
-class Amex (Bank) :
+class Amex(Bank):
     amex_secret = collections.namedtuple('Secret', ('amex_username amex_password ynab_password'))
 
     full_name = 'American Express'

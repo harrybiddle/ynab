@@ -1,9 +1,8 @@
 import collections
 import fileutils
 from bank import Bank
-from selenium.webdriver import ActionChains
 
-class HSBC (Bank) :
+class HSBC(Bank):
     hsbc_secret = collections.namedtuple('Secret', ('hsbc_username hsbc_memorable_question hsbc_security_code ynab_password'))
 
     full_name = 'HSBC'
@@ -44,9 +43,9 @@ class HSBC (Bank) :
 
         # fill in memorable question and 2FA
         memorable = driver.find_element_by_id('memorableAnswer')
-        memorable.send_keys(self.secret.hsbc_memorable_question);
+        memorable.send_keys(self.secret.hsbc_memorable_question)
 
-        code = driver.find_element_by_id('idv_OtpCredential');
+        code = driver.find_element_by_id('idv_OtpCredential')
         code.send_keys(self.secret.hsbc_security_code)
 
         # complete login

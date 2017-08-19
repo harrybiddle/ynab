@@ -1,7 +1,5 @@
 import os
-import sys
 import unittest
-import commentjson
 import yaml
 from schema import SchemaError
 

@@ -5,9 +5,8 @@ import time
 import os.path
 
 from bank import Bank
-from selenium.webdriver import ActionChains
 
-class Halifax (Bank) :
+class Halifax(Bank):
     halifax_secret = collections.namedtuple('Secret', ('halifax_username halifax_password halifax_challenge ynab_password'))
 
     full_name = 'Halifax'
