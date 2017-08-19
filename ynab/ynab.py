@@ -48,7 +48,7 @@ def chrome_driver(temp_download_dir):
 def parse_config(config):
     return _CONFIG_SCHEMA.validate(config)
 
-def construct_source_objects(configs):
+def construct_banks_from_config(configs):
     def construct_object(config):
         source_type = config['type']
         source_class = _BANKS[source_type]
@@ -75,7 +75,7 @@ def main(argv=None):
     target_config = config['ynab']['targets'][0]
 
     source_configs = config['sources']
-    banks = construct_source_objects(source_configs)  # unused for now
+    banks = construct_banks_from_config(source_configs)
 
     # For now, only support one source and one target
     bank = banks[0]
