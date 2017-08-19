@@ -2,10 +2,13 @@ import collections
 from bank import Bank
 from selenium.webdriver.support.ui import Select
 
-class Natwest (Bank):
+class Natwest(Bank):
     natwest_secret = collections.namedtuple('Secret', ('customer_number pin natwest_password ynab_password'))
 
     full_name = 'Natwest'
+
+    def __init__(self, config):
+        pass
 
     def prompt(self):
         print ('Enter a semicolon separated list of natwest customer number, '
@@ -15,9 +18,9 @@ class Natwest (Bank):
         self.secret = self.natwest_secret(*semicolon_separated_text.split(';'))
         return self.secret
 
-    def download_transactions(self, secret, driver):
+    def download_transactions(self, driver, _):
         self._go_to_website(driver)
-        self._log_in(secret, driver)
+        self._log_in(driver)
         self._navigate_to_downloads_page(driver)
         self._initiate_download(driver)
 
@@ -28,14 +31,14 @@ class Natwest (Bank):
         driver.switch_to_default_content()
         driver.switch_to_frame('ctl00_secframe')
 
-    def _log_in_customer_number(self, secret, driver):
+    def _log_in_customer_number(self, driver):
         self._switch_to_security_frame(driver)
         search_box = driver.find_element_by_name(
             'ctl00$mainContent$LI5TABA$DBID_edit')
-        search_box.send_keys(secret.customer_number)
+        search_box.send_keys(self.secret.customer_number)
         search_box.submit()
 
-    def _select_characters(self, secret, texts_requesting_pin_digits,
+    def _select_characters(self, texts_requesting_pin_digits,
                            texts_requesting_password_chars):
         ''' Takes a list of phrases like "Enter the xth number" that are asking
         for a subset of the pin/password, and returns that subset.'''
@@ -45,10 +48,10 @@ class Natwest (Bank):
         pin_digits = map(extract_int_minus_one, texts_requesting_pin_digits)
         password_chars = map(extract_int_minus_one,
                              texts_requesting_password_chars)
-        return (''.join(map(secret.pin.__getitem__, pin_digits)),
-                ''.join(map(secret.natwest_password.__getitem__, password_chars)))
+        return (''.join(map(self.secret.pin.__getitem__, pin_digits)),
+                ''.join(map(self.secret.natwest_password.__getitem__, password_chars)))
 
-    def _log_in_pin_and_password(self, secret, driver):
+    def _log_in_pin_and_password(self, driver):
         # get the text asking for the pin digits and password chars
         texts_requesting_pin_digits = [
             driver.find_element_by_id('ctl00_mainContent_Tab1_LI6DDALALabel').text,
@@ -60,8 +63,7 @@ class Natwest (Bank):
             driver.find_element_by_id('ctl00_mainContent_Tab1_LI6DDALFLabel').text]
 
         # extract the requested info from the secret
-        subpin, subpassword = self._select_characters(secret,
-                                                      texts_requesting_pin_digits,
+        subpin, subpassword = self._select_characters(texts_requesting_pin_digits,
                                                       texts_requesting_password_chars)
 
         # find the text boxes on the page
@@ -86,9 +88,9 @@ class Natwest (Bank):
             'ctl00$mainContent$Tab1$next_text_button_button')
         next.click()
 
-    def _log_in(self, secret, driver):
-        self._log_in_customer_number(secret, driver)
-        self._log_in_pin_and_password(secret, driver)
+    def _log_in(self, driver):
+        self._log_in_customer_number(driver)
+        self._log_in_pin_and_password(driver)
 
     def _navigate_to_downloads_page(self, driver):
         self._switch_to_security_frame(driver)

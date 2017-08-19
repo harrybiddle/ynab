@@ -7,6 +7,9 @@ class HSBC(Bank):
 
     full_name = 'HSBC'
 
+    def __init__(self, config):
+        pass
+
     def prompt(self):
         print ('Enter a semicolon separated list of hsbc username, '
                'hsbc memorable question, hsbc security code, and ynab password')
