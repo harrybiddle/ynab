@@ -32,7 +32,8 @@ class TestSelectCharacters(unittest.TestCase):
                           'Enter the 10th character']
 
         n = natwest.Natwest()
-        a, b = n._select_characters(secret, pin_digits, password_chars)
+        n.secret = secret
+        a, b = n._select_characters(pin_digits, password_chars)
         self.assertEqual(a, _PIN[3] + _PIN[1] + _PIN[2])
         self.assertEqual(b, _PASSWORD1[4] + _PASSWORD1[6] + _PASSWORD1[9])
 
