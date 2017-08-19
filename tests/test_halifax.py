@@ -10,7 +10,7 @@ _TEST_RESULT_FILE = os.path.join(_SCRIPT_DIR, 'test_correct.qif')
 
 class TestFileInverter(unittest.TestCase):
     def test_single_entry_invert(self):
-        halifax = Halifax()
+        halifax = Halifax(None)
         inverted_file = halifax._invert_files([_TEST_FILE])
         self.assertTrue(filecmp.cmp(_TEST_RESULT_FILE,
                                     inverted_file[0],
