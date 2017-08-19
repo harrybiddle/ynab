@@ -44,7 +44,7 @@ class Halifax(Bank):
             output file will be a_fixed.qif
         '''
 
-        toReturn = []
+        to_return = []
         for path in paths:
             new_path = '_fixed'.join(os.path.splitext(path))
             print new_path
@@ -57,9 +57,9 @@ class Halifax(Bank):
                             new_file.write('T-' + line[1:])
                     else:
                         new_file.write(line)
-            toReturn.append(new_path)
+            to_return.append(new_path)
 
-        return toReturn
+        return to_return
 
     def _go_to_website(self, driver):
         driver.get('https://www.halifax-online.co.uk')
