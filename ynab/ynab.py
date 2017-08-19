@@ -52,7 +52,6 @@ def construct_banks_from_config(configs):
     def construct_object(config):
         source_type = config['type']
         source_class = _BANKS[source_type]
-        print source_class
         return source_class(config)
     return map(construct_object, configs)
 
