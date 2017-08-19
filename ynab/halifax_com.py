@@ -2,6 +2,7 @@ import collections
 import fileutils
 import re
 import time
+import os.path
 
 from bank import Bank
 from selenium.webdriver import ActionChains
@@ -31,23 +32,33 @@ class Halifax (Bank) :
         self._initiate_download(driver)
 
     def _wait_until_download_complete(self, dir):
-        return fileutils.wait_for_file_with_prefix(dir, '.qif', '5253030007970668')
+        return fileutils.wait_for_file_with_prefix(dir, '.qif',
+                                                   '5253030007970668')
 
-    # Used to invert the sign of transactions in the downloaded files so ynab interprets the transactions correctly
     def _invert_files(self, paths):
+        ''' Reads files of bank transaction from disks, inverts the sign of the
+        transaction amounts, and writes them out to another file.
+        Args:
+            paths: a list of file paths to modify
+
+        Returns: a list of the written files. For an input file a.qif, the
+            output file will be a_fixed.qif
+        '''
+
         toReturn = []
         for path in paths:
-            new_file_path = path[:-4] + '_fixed.qif';
-            new_file = open(new_file_path, 'w')
-            for count, line in enumerate(open(path, 'r')):
-                if ((count + 1) % 4 == 0):
-                    if (line.startswith('T-')):
-                        new_file.write('T' + line[2:])
+            new_path = '_fixed'.join(os.path.splitext(path))
+            print new_path
+            with open(new_path, 'w') as new_file, open(path) as file:
+                for count, line in enumerate(file):
+                    if ((count + 1) % 4 == 0):
+                        if (line.startswith('T-')):
+                            new_file.write('T' + line[2:])
+                        else:
+                            new_file.write('T-' + line[1:])
                     else:
-                        new_file.write('T-' + line[1:])
-                else:
-                    new_file.write(line)
-            toReturn.append(new_file_path)
+                        new_file.write(line)
+            toReturn.append(new_path)
 
         return toReturn
 
