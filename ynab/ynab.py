@@ -25,8 +25,7 @@ _BANKS = {'amex': Amex,
           'natwest': Natwest}
 
 _SOURCE_SCHEMA = {'type': Or(*_BANKS.keys()),
-                  Optional('target_id'): object,
-                  Optional('id'): object}
+                  Optional('target_id'): object}
 _TARGET_SCHEMA = {'budget': And(str, len),
                   'account': And(str, len),
                   Optional('id'): object}
