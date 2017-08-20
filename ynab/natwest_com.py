@@ -7,6 +7,9 @@ class Natwest(Bank):
 
     full_name = 'Natwest'
 
+    def __init__(self, config):
+        pass
+
     def prompt(self):
         print ('Enter a semicolon separated list of natwest customer number, '
                'natwest pin, natwest password, and ynab password')

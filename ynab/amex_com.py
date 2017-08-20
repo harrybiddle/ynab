@@ -8,6 +8,9 @@ class Amex(Bank):
 
     full_name = 'American Express'
 
+    def __init__(self, config):
+        pass
+
     def prompt(self):
         print ('Enter a semicolon separated list of amex username, '
                'amex password, and ynab password')

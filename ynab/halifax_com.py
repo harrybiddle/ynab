@@ -11,6 +11,9 @@ class Halifax(Bank):
 
     full_name = 'Halifax'
 
+    def __init__(self, config):
+        pass
+
     def prompt(self):
         print ('Enter a semicolon separated list of your halifax username, '
                'halifax password, halifax challenge, and ynab password')

@@ -12,7 +12,7 @@ _PASSWORD2 = 'myothercrazypas8s'
 class TestSecret(unittest.TestCase):
     def test_valid_construction(self):
         secret_text = ';'.join([_ID, _PIN, _PASSWORD1, _PASSWORD2])
-        n = natwest.Natwest()
+        n = natwest.Natwest(None)
         s = n.parse_secret(secret_text)
         self.assertEqual(s.customer_number, _ID)
         self.assertEqual(s.pin, _PIN)
@@ -31,7 +31,7 @@ class TestSelectCharacters(unittest.TestCase):
                           'Enter the 7th character',
                           'Enter the 10th character']
 
-        n = natwest.Natwest()
+        n = natwest.Natwest(None)
         n.secret = secret
         a, b = n._select_characters(pin_digits, password_chars)
         self.assertEqual(a, _PIN[3] + _PIN[1] + _PIN[2])
