@@ -18,6 +18,22 @@ class TestBankUUIDs(unittest.TestCase):
         b = bank.Bank()
         self.assertEqual(b.uuid(), b.uuid())
 
+    def test_uuid_doesnt_change(self):
+        b = bank.Bank()
+        self.assertEqual(b.uuid(), b.uuid())
+
+    def test_equality(self):
+        a = bank.Bank()
+        b = bank.Bank()
+        self.assertEqual(a, a)
+        self.assertNotEqual(a, b)
+
+    def test_hash_equality(self):
+        a = bank.Bank()
+        b = bank.Bank()
+        self.assertEqual(hash(a), hash(a))
+        self.assertNotEqual(hash(a), hash(b))
+
 class TestBankSecrets(unittest.TestCase):
 
     def test_secret_registration(self):
