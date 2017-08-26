@@ -82,12 +82,8 @@ def main(argv=None):
     bank = banks[0]
     print 'Fetching recent transactions from {}'.format(bank.full_name)
 
-    # gather together a list of all secrets
-    required_secrets = {}
-    for bank in banks:
-        required_secrets[bank] = bank.all_secrets()
-
-    # get them all in one shot
+    # get all secrets from user
+    required_secrets = dict([(bank, bank.all_secrets) for bank in banks])
     secrets = get_all_secrets_from_user(required_secrets)
 
     # pass them back to the banks
