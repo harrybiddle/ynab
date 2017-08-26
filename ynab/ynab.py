@@ -59,6 +59,9 @@ def get_argument_parser():
     parser.add_argument('configuration_file', type=argparse.FileType('r'))
     return parser
 
+def get_all_secrets_from_user(required_secrets):
+    return {}
+
 def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
@@ -79,7 +82,17 @@ def main(argv=None):
     bank = banks[0]
     print 'Fetching recent transactions from {}'.format(bank.full_name)
 
-    bank.get_secret_text_from_user()
+    # gather together a list of all secrets
+    required_secrets = {}
+    for bank in banks:
+        required_secrets[bank] = bank.all_secrets()
+
+    # get them all in one shot
+    secrets = get_all_secrets_from_user(required_secrets)
+
+    # pass them back to the banks
+    for bank, s in secrets.iteritems():
+        bank.extract_secrets(s)
 
     print 'Starting chrome to do your bidding'
     temp_download_dir = make_temp_download_dir()

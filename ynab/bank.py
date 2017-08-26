@@ -8,6 +8,17 @@ class Bank(object):
         self._secrets = dict([(s, None) for s in secrets])
         self._extract_secrets_success = False
 
+    def __hash__(self):
+        return hash(self.uuid())
+
+    def __eq__(self, other):
+        return self.uuid() == other.uuid()
+
+    def __ne__(self, other):
+        # Not strictly necessary, but to avoid having both x==y and x!=y
+        # True at the same time
+        return not(self == other)
+
     def get_secret_text_from_user(self):
         self.prompt()
         user_inputs = getpass()
@@ -17,10 +28,9 @@ class Bank(object):
         return self._uuid
 
     def extract_secrets(self, secrets):
-        our_secrets = secrets[self.uuid()]
         new_secrets = {}
         for name in self._secrets.keys():
-            value = our_secrets[name]
+            value = secrets[name]
             new_secrets[name] = value
         self._secrets = new_secrets
         self._extract_secrets_success = True
@@ -28,5 +38,5 @@ class Bank(object):
     def secret(self, name):
         return self._secrets[name]
 
-    def secret_names(self):
+    def all_secrets(self):
         return self._secrets.keys()
