@@ -7,6 +7,8 @@ class Bank:
         return self.parse_secret(user_input)
 
     def generate_uuid(self):
+    	if hasattr(self, '_uuid'):
+    		raise RuntimeError('uuid already exists')
     	self._uuid = 'hi'
 
     def uuid(self):
