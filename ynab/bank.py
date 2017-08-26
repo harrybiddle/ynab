@@ -26,5 +26,7 @@ class Bank(object):
         self._extract_secrets_success = True
 
     def secret(self, name):
-        assert (self._extract_secrets_success, Bank.failure_msg)
         return self._secrets[name]
+
+    def secret_names(self):
+        return self._secrets.keys()

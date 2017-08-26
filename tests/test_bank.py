@@ -45,5 +45,10 @@ class TestBankSecrets(unittest.TestCase):
         b = bank.Bank(['password'])
         self.assertEqual(None, b.secret('password'))
 
+    def test_secret_names(self):
+        s = ['foo', 'bar']
+        b = bank.Bank(s)
+        self.assertEqual(s, b.secret_names())
+
 if __name__ == '__main__':
     unittest.main()
