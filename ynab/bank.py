@@ -2,7 +2,7 @@ from getpass import getpass
 import uuid
 
 class Bank(object):
-    failure_msg = 'Cannot extract secret without first calling generate_uuid()'
+
     def __init__(self, secrets=[]):
         self._uuid = str(uuid.uuid4())
         self._secrets = dict([(s, None) for s in secrets])
