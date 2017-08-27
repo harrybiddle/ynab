@@ -26,3 +26,6 @@ class TestPep8(unittest.TestCase):
             python_files = get_all_python_files_in_repository()
             result = style.check_files(python_files)
             self.assertEqual(result.total_errors, 0)
+
+if __name__ == '__main__':
+    unittest.main()
