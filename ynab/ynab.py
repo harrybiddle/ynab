@@ -140,7 +140,8 @@ def main(argv=None):
     bank = banks[0]
     print 'Fetching recent transactions from {}'.format(bank.full_name)
 
-    fetch_secrets([bank, ynab])
+    #fetch_secrets([bank, ynab])
+    ynab.extract_secrets({'password': '@3GveXt6'})
 
     print 'Starting chrome to do your bidding'
     temp_download_dir = make_temp_download_dir()
@@ -149,13 +150,13 @@ def main(argv=None):
 
     try:
         print 'Downloading transactions from ' + bank.full_name
-        path = bank.download_transactions(driver, temp_download_dir)
+        #path = bank.download_transactions(driver, temp_download_dir)
 
-        driver.execute_script('window.open(\'about:blank\', \'_blank\');')
-        driver.switch_to_window(driver.window_handles[1])
+        #driver.execute_script('window.open(\'about:blank\', \'_blank\');')
+        #driver.switch_to_window(driver.window_handles[1])
 
         print 'Uploading transactions to ynab'
-        ynab.upload_transactions(bank, driver, [path])
+        ynab.upload_transactions(bank, driver, ['~/Downloads/tmpykHGBB/BIDDLEHSTU2010-20170827.ofx'])
 
         print 'Removing the remaints'
         shutil.rmtree(temp_download_dir)

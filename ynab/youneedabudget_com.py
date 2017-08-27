@@ -52,7 +52,7 @@ class YNAB(Bank):
         driver.find_element_by_xpath(budget_dropdown).click()
 
         # navigate to the list of budgets
-        open_budget = '//*[text()="Open a budget"]'
+        open_budget = '//*[text()="Open Budget"]'
         driver.find_element_by_xpath(open_budget).click()
 
         # find our chosen budget text
