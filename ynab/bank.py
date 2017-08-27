@@ -1,4 +1,3 @@
-from getpass import getpass
 import uuid
 
 class Bank(object):
@@ -18,11 +17,6 @@ class Bank(object):
         # Not strictly necessary, but to avoid having both x==y and x!=y
         # True at the same time
         return not(self == other)
-
-    def get_secret_text_from_user(self):
-        self.prompt()
-        user_inputs = getpass()
-        return self.parse_secret(user_inputs)
 
     def uuid(self):
         return self._uuid

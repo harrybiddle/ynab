@@ -1,22 +1,13 @@
-import collections
 from bank import Bank
 from selenium.webdriver.support.ui import Select
 
 class Natwest(Bank):
-    natwest_secret = collections.namedtuple('Secret', ('customer_number pin natwest_password ynab_password'))
 
     full_name = 'Natwest'
 
     def __init__(self, config):
-        pass
-
-    def prompt(self):
-        print ('Enter a semicolon separated list of natwest customer number, '
-               'natwest pin, natwest password, and ynab password')
-
-    def parse_secret(self, semicolon_separated_text):
-        self.secret = self.natwest_secret(*semicolon_separated_text.split(';'))
-        return self.secret
+        secrets = ['customer id', 'pin', 'password']
+        super(Natwest, self).__init__(secrets)
 
     def download_transactions(self, driver, _):
         self._go_to_website(driver)
@@ -35,7 +26,7 @@ class Natwest(Bank):
         self._switch_to_security_frame(driver)
         search_box = driver.find_element_by_name(
             'ctl00$mainContent$LI5TABA$DBID_edit')
-        search_box.send_keys(self.secret.customer_number)
+        search_box.send_keys(self.secret('customer id'))
         search_box.submit()
 
     def _select_characters(self, texts_requesting_pin_digits,
@@ -48,8 +39,8 @@ class Natwest(Bank):
         pin_digits = map(extract_int_minus_one, texts_requesting_pin_digits)
         password_chars = map(extract_int_minus_one,
                              texts_requesting_password_chars)
-        return (''.join(map(self.secret.pin.__getitem__, pin_digits)),
-                ''.join(map(self.secret.natwest_password.__getitem__, password_chars)))
+        return (''.join(map(self.secret('pin').__getitem__, pin_digits)),
+                ''.join(map(self.secret('password').__getitem__, password_chars)))
 
     def _log_in_pin_and_password(self, driver):
         # get the text asking for the pin digits and password chars
