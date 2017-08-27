@@ -5,6 +5,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as conditions
 
+from bank import Bank
+
 _WAIT_TIME_FOR_SUCCESSFUL_UPLOAD_SECONDS = 10
 
 
@@ -68,7 +70,7 @@ def _wait_until_upload_confirmed_successful(driver):
     driver.find_element_by_xpath('//button[text()="OK"]').click()
 
 
-def upload_transactions(bank, driver, paths, config, email):
+def _upload_transactions(bank, driver, paths, config, email):
     _go_to_website(driver)
     _log_in(driver, email, bank.secret)
     for path in paths:
@@ -78,3 +80,15 @@ def upload_transactions(bank, driver, paths, config, email):
         _initiate_upload(driver, path)
         time.sleep(1)
         _wait_until_upload_confirmed_successful(driver)
+
+class YNAB(Bank):
+
+    full_name = 'YNAB'
+
+    def __init__(self, config):
+        super(YNAB, self).__init__(['password'])
+        self.config = config
+
+    def upload_transactions(self, bank, driver, paths):
+        _upload_transactions(bank, driver, paths,
+                             self.config, self.config['email'])
