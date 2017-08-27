@@ -86,7 +86,6 @@ def get_all_secrets_from_user(required_secrets, getpass=getpass):
                  'pin': '1234'},
          Bank2: {'password': 'oranges'}}
     '''
-    print required_secrets
     ret = OrderedDict()
     prompt = 'Enter a semicolon-separated list of:\n'
     for bank, secrets in required_secrets.iteritems():
@@ -114,9 +113,7 @@ def fetch_secrets(banks):
     is prompted for the secrets, they will be prompted in the order that the
     Banks were given to this function, so ensure that the iterable is ordered
     '''
-    required_secrets = OrderedDict([(b, b.all_secrets) for b in banks])
-    for t in required_secrets.iteritems():
-        print t
+    required_secrets = OrderedDict([(b, b.all_secrets()) for b in banks])
     secrets = get_all_secrets_from_user(required_secrets)
     for b, s in secrets.iteritems():
         b.extract_secrets(s)
