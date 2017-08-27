@@ -1,12 +1,17 @@
-from bank import Bank
 from selenium.webdriver.support.ui import Select
+
+from bank import Bank
+
+_CUSTOMER_NUMBER = 'customer number'
+_PIN = 'pin'
+_PASSWORD = 'password'
 
 class Natwest(Bank):
 
     full_name = 'Natwest'
 
     def __init__(self, config):
-        secrets = ['customer id', 'pin', 'password']
+        secrets = [_CUSTOMER_NUMBER, _PIN, _PASSWORD]
         super(Natwest, self).__init__(secrets)
 
     def download_transactions(self, driver, _):
@@ -26,7 +31,7 @@ class Natwest(Bank):
         self._switch_to_security_frame(driver)
         search_box = driver.find_element_by_name(
             'ctl00$mainContent$LI5TABA$DBID_edit')
-        search_box.send_keys(self.secret('customer id'))
+        search_box.send_keys(self.secret(_CUSTOMER_NUMBER))
         search_box.submit()
 
     def _select_characters(self, texts_requesting_pin_digits,
@@ -39,8 +44,8 @@ class Natwest(Bank):
         pin_digits = map(extract_int_minus_one, texts_requesting_pin_digits)
         password_chars = map(extract_int_minus_one,
                              texts_requesting_password_chars)
-        return (''.join(map(self.secret('pin').__getitem__, pin_digits)),
-                ''.join(map(self.secret('password').__getitem__, password_chars)))
+        return (''.join(map(self.secret(_PIN).__getitem__, pin_digits)),
+                ''.join(map(self.secret(_PASSWORD).__getitem__, password_chars)))
 
     def _log_in_pin_and_password(self, driver):
         # get the text asking for the pin digits and password chars

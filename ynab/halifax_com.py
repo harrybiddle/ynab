@@ -1,25 +1,16 @@
-import collections
 import fileutils
+import os.path
 import re
 import time
-import os.path
 
 from bank import Bank
 
 class Halifax(Bank):
-    halifax_secret = collections.namedtuple('Secret', ('halifax_username halifax_password halifax_challenge ynab_password'))
-
     full_name = 'Halifax'
 
     def __init__(self, config):
-        pass
-
-    def prompt(self):
-        print ('Enter a semicolon separated list of your halifax username, '
-               'halifax password, halifax challenge, and ynab password')
-
-    def parse_secret(self, semicolon_separated_text):
-        self.secret = self.halifax_secret(*semicolon_separated_text.split(';'))
+        super(Halifax, self).__init__(['password', 'challenge'])
+        self.username = config['username']
 
     def download_transactions(self, driver, dir):
         self._start_download(driver)
@@ -29,7 +20,7 @@ class Halifax(Bank):
 
     def _start_download(self, driver):
         self._go_to_website(driver)
-        self._log_in(self.secret, driver)
+        self._log_in(driver)
         self._navigate_to_downloads_page(driver)
         self._initiate_download(driver)
 
@@ -68,12 +59,12 @@ class Halifax(Bank):
         driver.get('https://www.halifax-online.co.uk')
         assert 'Halifax' in driver.title
 
-    def _log_in(self, secret, driver):
+    def _log_in(self, driver):
         user_id = driver.find_element_by_name('frmLogin:strCustomerLogin_userID')
-        user_id.send_keys(secret.halifax_username)
+        user_id.send_keys(self.username)
 
         password = driver.find_element_by_id('frmLogin:strCustomerLogin_pwd')
-        password.send_keys(secret.halifax_password)
+        password.send_keys(self.secret('password'))
 
         # click through to log in
         loginButton = driver.find_element_by_id('frmLogin:btnLogin2')
@@ -91,7 +82,7 @@ class Halifax(Bank):
         match = re.match('Please enter characters ([1-8]), ([1-8]) and ([1-8])', description)
 
         indexes = [int(match.group(1)) - 1, int(match.group(2)) - 1, int(match.group(3)) - 1]
-        chars = ''.join(map(self.secret.halifax_challenge.__getitem__, indexes))
+        chars = ''.join(map(self.secret('challenge').__getitem__, indexes))
 
         challenge_selectors = [
             driver.find_element_by_name('frmentermemorableinformation1:strEnterMemorableInformation_memInfo1'),
