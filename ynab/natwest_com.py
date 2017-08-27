@@ -8,7 +8,7 @@ class Natwest(Bank):
 
     def __init__(self, config):
         super(Natwest, self).__init__(['pin', 'password'])
-        self.customer_number = config['customer number']
+        self.customer_number = config['customer_number']
 
     def download_transactions(self, driver, _):
         self._go_to_website(driver)

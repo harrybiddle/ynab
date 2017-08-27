@@ -16,7 +16,7 @@ class TestSelectCharacters(unittest.TestCase):
                           'Enter the 7th character',
                           'Enter the 10th character']
 
-        n = natwest.Natwest({'customer number': _ID})
+        n = natwest.Natwest({'customer_number': _ID})
         n.extract_secrets({'pin': _PIN,
                            'password': _PASSWORD})
 
