@@ -86,6 +86,7 @@ def get_all_secrets_from_user(required_secrets, getpass=getpass):
                  'pin': '1234'},
          Bank2: {'password': 'oranges'}}
     '''
+    print required_secrets
     ret = OrderedDict()
     prompt = 'Enter a semicolon-separated list of:\n'
     for bank, secrets in required_secrets.iteritems():
