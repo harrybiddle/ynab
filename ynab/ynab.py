@@ -120,7 +120,9 @@ def fetch_secrets(banks):
 
 def get_argument_parser():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('configuration_file', type=argparse.FileType('r'))
+    parser.add_argument('configuration_file', type=str,
+                        default=os.path.expanduser('~/.ynab.conf'), nargs='?',
+                        help='defaults to ~/.ynab.conf')
     return parser
 
 def main(argv=None):
@@ -130,7 +132,8 @@ def main(argv=None):
     parser = get_argument_parser()
     args = parser.parse_args(argv)
 
-    loaded_config = yaml.load(args.configuration_file)
+    with open(args.configuration_file) as conf:
+        loaded_config = yaml.load(conf)
     config = parse_config(loaded_config)
 
     ynab = YNAB(config['ynab'])
