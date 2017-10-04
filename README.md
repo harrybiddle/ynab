@@ -12,8 +12,11 @@ Requirements:
 1. [Google Chrome](https://www.google.com/chrome).
 1. [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/). For a Mac with [Homebrew](https://brew.sh), this can be done with `brew install chromedriver`. 
 1. Python 2.7.
-1. (Optional) [pip](https://pip.pypa.io) for easy installation of the script.
-1. (Optional) [1Password](https://1password.com/) and [sudolikeaboss](https://github.com/ravenac95/sudolikeaboss) for easy password entry.
+
+Optional:
+
+1. [pip](https://pip.pypa.io) for easy installation of the script.
+1. [1Password](https://1password.com/) and [sudolikeaboss](https://github.com/ravenac95/sudolikeaboss) for easy password entry.
 
 To install the script:
 
