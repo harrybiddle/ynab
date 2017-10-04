@@ -153,12 +153,13 @@ def main(argv=None):
     try:
         print 'Downloading transactions from ' + bank.full_name
         path = bank.download_transactions(driver, temp_download_dir)
+        print path
 
         driver.execute_script('window.open(\'about:blank\', \'_blank\');')
         driver.switch_to_window(driver.window_handles[1])
 
         print 'Uploading transactions to ynab'
-        ynab.upload_transactions(bank, driver, path)
+        ynab.upload_transactions(bank, driver, [path])
 
         print 'Removing the remaints'
         shutil.rmtree(temp_download_dir)

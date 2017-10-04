@@ -1,6 +1,7 @@
 from selenium.webdriver.support.ui import Select
 
 from bank import Bank
+import fileutils
 
 class Natwest(Bank):
 
@@ -10,11 +11,12 @@ class Natwest(Bank):
         super(Natwest, self).__init__(['pin', 'password'])
         self.customer_number = config['customer_number']
 
-    def download_transactions(self, driver, _):
+    def download_transactions(self, driver, dir):
         self._go_to_website(driver)
         self._log_in(driver)
         self._navigate_to_downloads_page(driver)
         self._initiate_download(driver)
+        return fileutils.wait_for_file(dir, '.ofx')[0]
 
     def _go_to_website(self, driver):
         driver.get('https://www.nwolb.com')

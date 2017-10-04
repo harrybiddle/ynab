@@ -21,7 +21,7 @@ class Amex(Bank):
         self._initiate_download(driver)
 
     def _wait_until_download_complete(self, dir):
-        return fileutils.wait_for_file(dir, '.qfx')
+        return fileutils.wait_for_file(dir, '.qfx')[0]
 
     def _go_to_website(self, driver):
         driver.get('https://www.americanexpress.com/uk/')

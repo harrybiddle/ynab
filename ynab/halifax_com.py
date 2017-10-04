@@ -26,7 +26,7 @@ class Halifax(Bank):
 
     def _wait_until_download_complete(self, dir):
         return fileutils.wait_for_file_with_prefix(dir, '.qif',
-                                                   '5253030007970668')
+                                                   '5253030007970668')[0]
 
     def _invert_files(self, paths):
         ''' Reads files of bank transaction from disks, inverts the sign of the
