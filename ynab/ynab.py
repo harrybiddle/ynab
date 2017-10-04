@@ -143,8 +143,7 @@ def main(argv=None):
     bank = banks[0]
     print 'Fetching recent transactions from {}'.format(bank.full_name)
 
-    #fetch_secrets([bank, ynab])
-    ynab.extract_secrets({'password': '@3GveXt6'})
+    fetch_secrets([bank, ynab])
 
     print 'Starting chrome to do your bidding'
     temp_download_dir = make_temp_download_dir()
