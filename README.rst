@@ -17,10 +17,8 @@ Requirements:
 
 To install the script:
 
-```
-python setup.py bdist_wheel
-pip install dist/ynab*.whl
-```
+    python setup.py bdist_wheel
+    pip install dist/ynab*.whl
 
 You will need to make sure that directory containing the binary (as displayed with `pip show -f ynab`) is on your `PATH`. For a Mac this can be done with
 
