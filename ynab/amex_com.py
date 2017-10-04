@@ -1,22 +1,14 @@
-import collections
-import fileutils
-from bank import Bank
 from selenium.webdriver import ActionChains
+import fileutils
+
+from bank import Bank
 
 class Amex(Bank):
-    amex_secret = collections.namedtuple('Secret', ('amex_username amex_password ynab_password'))
-
     full_name = 'American Express'
 
     def __init__(self, config):
-        pass
-
-    def prompt(self):
-        print ('Enter a semicolon separated list of amex username, '
-               'amex password, and ynab password')
-
-    def parse_secret(self, semicolon_separated_text):
-        self.secret = self.amex_secret(*semicolon_separated_text.split(';'))
+        super(Amex, self).__init__(['password'])
+        self.username = config['username']
 
     def download_transactions(self, driver, dir):
         self._start_download(driver)
@@ -40,10 +32,10 @@ class Amex(Bank):
 
     def _log_in(self, driver):
         user_id = driver.find_element_by_name('UserID')
-        user_id.send_keys(self.secret.amex_username)
+        user_id.send_keys(self.username)
 
         password = driver.find_element_by_id('Password')
-        password.send_keys(self.secret.amex_password)
+        password.send_keys(self.secret('password'))
 
         # click through to log in
         loginButton = driver.find_element_by_id('loginButton')

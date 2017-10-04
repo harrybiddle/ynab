@@ -1,21 +1,14 @@
-import collections
 import fileutils
+
 from bank import Bank
 
 class HSBC(Bank):
-    hsbc_secret = collections.namedtuple('Secret', ('hsbc_username hsbc_memorable_question hsbc_security_code ynab_password'))
 
     full_name = 'HSBC'
 
     def __init__(self, config):
-        pass
-
-    def prompt(self):
-        print ('Enter a semicolon separated list of hsbc username, '
-               'hsbc memorable question, hsbc security code, and ynab password')
-
-    def parse_secret(self, semicolon_separated_text):
-        self.secret = self.hsbc_secret(*semicolon_separated_text.split(';'))
+        super(Halifax, self).__init__(['memorable question', 'security code'])
+        self.username = config['username']
 
     def download_transactions(self, driver, dir):
         self._start_download(driver)
@@ -39,17 +32,17 @@ class HSBC(Bank):
 
     def _log_in(self, driver):
         username = driver.switch_to_active_element()
-        username.send_keys(self.secret.hsbc_username)
+        username.send_keys(self.username)
 
         # get to password submission point
         driver.find_element_by_class_name('submit_input').click()
 
         # fill in memorable question and 2FA
         memorable = driver.find_element_by_id('memorableAnswer')
-        memorable.send_keys(self.secret.hsbc_memorable_question)
+        memorable.send_keys(self.secret('memorable question'))
 
         code = driver.find_element_by_id('idv_OtpCredential')
-        code.send_keys(self.secret.hsbc_security_code)
+        code.send_keys(self.secret('security code'))
 
         # complete login
         driver.find_element_by_class_name('submit_input').click()

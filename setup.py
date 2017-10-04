@@ -30,7 +30,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='3',
+    version='4',
 
     description='Automate downloading and uploading transactions to YNAB',
     long_description=long_description,
@@ -39,7 +39,7 @@ setup(
     url='https://github.com/harrybiddle/ynab',
 
     # Author details
-    author='Harry Biddle',
+    author='Harry Biddle and John Boreiko',
     author_email='noemail@mailcatch.com',
 
     # Choose your license
@@ -91,9 +91,9 @@ setup(
     # dependencies). You can install these using the following syntax,
     # for example:
     # $ pip install -e .[dev,test]
-    # extras_require={
-    #     'test': [],
-    # },
+    extras_require={
+        'test': ['mock'],
+    },
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
