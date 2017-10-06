@@ -10,7 +10,7 @@ import sys
 import tempfile
 import yaml
 
-from getpass import getpass
+import getpass
 from selenium import webdriver
 
 from amex_com import Amex
@@ -62,7 +62,7 @@ def construct_banks_from_config(configs):
         return source_class(config)
     return map(construct_object, configs)
 
-def get_all_secrets_from_user(required_secrets, getpass=getpass):
+def get_all_secrets_from_user(required_secrets):
     ''' Given a dictionary mapping a Bank object to a list of names of secrets,
     we ask the user to supply _all_ of the given secrets as a semi-colon
     separated list. The input dictionary should be ordered, as they are
@@ -92,7 +92,7 @@ def get_all_secrets_from_user(required_secrets, getpass=getpass):
         for secret in secrets:
             prompt = prompt + '\t{} {}\n'.format(bank.full_name, secret)
     sys.stdout.write(prompt)
-    user_inputs = getpass()
+    user_inputs = getpass.getpass()
     inputted_secrets = user_inputs.split(';')
     assert (len(inputted_secrets) == sum([len(secrets) for secrets in required_secrets.values()]))
     ret = {}
