@@ -43,7 +43,8 @@ class EndToEndTest(unittest.TestCase):
                     'budget': 'My Budget',
                     'account': 'My Account'
                 }]
-            }
+            },
+            'temp_directory': tempfile.gettempdir()
         }
 
     def mock_necessary_website_responses(self, chrome_driver_mock):
