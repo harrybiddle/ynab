@@ -64,5 +64,6 @@ Development
 To run tests:
 
 ```bash
+pip install --user -r requirements.txt
 python setup.py test
 ```
