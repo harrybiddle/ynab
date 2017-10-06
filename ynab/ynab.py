@@ -8,10 +8,10 @@ import os
 import shutil
 import sys
 import tempfile
-import yaml
 
 import getpass
 from selenium import webdriver
+import yaml
 
 from amex_com import Amex
 from bank import Bank
@@ -167,6 +167,8 @@ def main(argv=None):
         if os.path.exists(temp_download_dir):
             sys.stderr.write(('Temporary directory not removed: {}\n'
                               .format(temp_download_dir)))
+
+    return 0
 
 if __name__ == '__main__':
     main()
