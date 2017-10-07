@@ -1,7 +1,7 @@
 import uuid
 
 class Bank(object):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, secrets={}):
         self._uuid = str(uuid.uuid4())
         self._secrets = secrets
 
