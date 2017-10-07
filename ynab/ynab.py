@@ -83,19 +83,22 @@ def copy_without_key(d, key_to_skip):
     ''' Returns a copy of the dictionary d, except without one specified key '''
     return {i:d[i] for i in d if i != key_to_skip}
 
-def fetch_secrets_and_construct_banks(types, configs, keyring_username):
+def fetch_secrets_and_construct_bank(cls, config, keyring_username):
+    secrets_keys = config.get('secrets_keys', {})
+    secrets = get_secrets_from_keyring(secrets_keys, keyring_username)
+    config_without_secrets_keys = copy_without_key(config, 'secrets_keys')
+    return cls(config_without_secrets_keys, secrets)
+
+def fetch_secrets_and_construct_banks(configs, keyring_username):
     ''' Takes a list of source configurations and constructs Banks objects
     according to the 'types' dictionary. As part of this, the keyring will be
     queried for any required secrets.
     '''
-    def fetch_secret_and_construct_object(config):
-        secrets_keys = config.get('secrets_keys', {})
-        secrets = get_secrets_from_keyring(secrets_keys, keyring_username)
-        source_type = config['type']
-        source_class = types[source_type]
-        config_without_secrets_keys = copy_without_key(config, 'secrets_keys')
-        return source_class(config_without_secrets_keys, secrets)
-    return map(fetch_secret_and_construct_object, configs)
+    def construct(config):
+        bank_type = config['type']
+        cls = _BANKS[bank_type]
+        return fetch_secrets_and_construct_bank(cls, config, keyring_username)
+    return map(construct, configs)
 
 def get_argument_parser():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -116,16 +119,11 @@ def main(argv=None):
     config = parse_config(loaded_config)
 
     # construct banks
-    banks = fetch_secrets_and_construct_banks(_BANKS,
-                                              config['sources'],
-                                              config['keyring']['username'])
+    keyring_username = config['keyring']['username']
+    banks = fetch_secrets_and_construct_banks(config['sources'], keyring_username)
 
-    # construct ynab - a fake source
-    fake_source_config = config['ynab']
-    fake_source_config['type'] = 'ynab'
-    ynab = fetch_secrets_and_construct_banks({'ynab': YNAB},
-                                              [fake_source_config],
-                                              config['keyring']['username'])[0]
+    # construct ynab
+    ynab = fetch_secrets_and_construct_bank(YNAB, config['ynab'], keyring_username)
 
     # For now, only support one source and one target
     bank = banks[0]

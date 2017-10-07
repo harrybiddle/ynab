@@ -86,15 +86,14 @@ class TestFetchSecretsAndConstructBanks(unittest.TestCase):
         class BankMock(object):
             def __init__(self, *args, **kwargs):
                 bank_init(*args, **kwargs)
-
-        self.types = {'mock': BankMock}
-        self.bank_config = {'type': 'mock', 'foo': 'bar'}
+        self.bank_cls = BankMock
+        self.bank_config = {'foo': 'bar'}
 
     def assert_bank_init_with_args(self, *args):
         self.bank_init.assert_called_with(*args)
 
-    def call_fetch_secrets_and_construct_banks(self, config):
-        ynab.fetch_secrets_and_construct_banks(self.types, [config], USERNAME)
+    def call_fetch_secrets_and_construct_bank(self, config):
+        ynab.fetch_secrets_and_construct_bank(self.bank_cls, config, USERNAME)
 
     @patch('keyring.get_password')
     def test_bank_recieves_config_and_secrets_minus_keys(self, keyring):
@@ -102,20 +101,20 @@ class TestFetchSecretsAndConstructBanks(unittest.TestCase):
         secrets_keys_config = {'secrets_keys': SECRETS_KEYS_CONFIG}
         config = concatd(self.bank_config, secrets_keys_config)
 
-        self.call_fetch_secrets_and_construct_banks(config)
+        self.call_fetch_secrets_and_construct_bank(config)
         self.assert_bank_init_with_args(self.bank_config, SECRETS)
 
     def test_bank_construction_completes_when_no_secrets_keys_config(self):
         config = self.bank_config
 
-        self.call_fetch_secrets_and_construct_banks(config)
+        self.call_fetch_secrets_and_construct_bank(config)
         self.assert_bank_init_with_args(self.bank_config, {})
 
     def test_bank_construction_completes_when_empty_secrets_keys_config(self):
         secrets_keys_config = {'secrets_keys': {}}
         config = concatd(self.bank_config, secrets_keys_config)
 
-        self.call_fetch_secrets_and_construct_banks(config)
+        self.call_fetch_secrets_and_construct_bank(config)
         self.assert_bank_init_with_args(self.bank_config, {})
 
 if __name__ == '__main__':
