@@ -28,14 +28,14 @@ _BANKS = {'amex': Amex,
           'natwest': Natwest}
 
 _SOURCE_SCHEMA = {'type': Or(*_BANKS.keys()),
-                  Optional('secrets'): {str: str},
-                  str: object}
+                  Optional('secrets_keys'): {str: str},
+                  Optional(str): object}
 _TARGET_SCHEMA = {'budget': And(str, len),
                   'account': And(str, len),
                   Optional('id'): object}
 _YNAB_SCHEMA = {'email': And(str, len),
                 'targets': [_TARGET_SCHEMA],
-                'passowrd_key': str}
+                'secrets_keys': {'password': str}}
 _KEYRING_SCHEMA = {'username': str}
 _CONFIG_SCHEMA = Schema({'sources': [_SOURCE_SCHEMA],
                          'ynab': _YNAB_SCHEMA,

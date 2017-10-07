@@ -43,7 +43,7 @@ Configuration
    ynab:
      email: <email@domain.com>
      secrets_keys:
-       - password: ynab_password
+       password: ynab_password
      targets:
        - budget: <My Budget>
          account: <My Account>
@@ -60,7 +60,7 @@ Configuration
        - type: amex
          username: <amex_username>
          secrets_keys:
-           - password: amex_password
+           password: amex_password
      ```
 
    - Halifax:
@@ -69,8 +69,8 @@ Configuration
        - type: halifax
          username: <halifax_username>
          secrets_keys:
-           - password: halifax_password
-           - challenge: halifax_challenge_password
+           password: halifax_password
+           challenge: halifax_challenge_password
      ```
 
    - HSBC:
@@ -79,8 +79,8 @@ Configuration
        - type: hsbc
          username: <hsbc_username>
          secrets_keys:
-           - memorable_question: hsbc_memorable_question
-           - security_code: hsbc_security_code
+           memorable_question: hsbc_memorable_question
+           security_code: hsbc_security_code
       ```
 
    - Natwest:
