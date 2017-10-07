@@ -1,5 +1,5 @@
 import os.path
-from glob import glob
+import glob
 from polling import poll
 
 _WAIT_FOR_FILE_DOWNLOAD_SECONDS = 10
@@ -17,7 +17,7 @@ def wait_for_file_with_prefix(dir, file_extension, file_prefix):
 
 def _wait_for_file(dir, path):
     g = os.path.join(dir, path)
-    poll(lambda: glob(g),
+    poll(lambda: glob.glob(g),
          timeout=_WAIT_FOR_FILE_DOWNLOAD_SECONDS,
          step=_WAIT_FOR_FILE_DOWNLOAD_POLL_SECONDS)
-    return glob(g)
+    return glob.glob(g)

@@ -56,6 +56,7 @@ class TestConfig(unittest.TestCase):
         validated_yaml = ynab.parse_config(as_yaml)
         self.assertEqual(as_yaml, validated_yaml)
 
+
 class TestGetSecretsFromKeyring(unittest.TestCase):
     ''' Tests the part of the code that fetches secrets from the keyring '''
 

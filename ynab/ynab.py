@@ -8,10 +8,10 @@ import os
 import shutil
 import sys
 import tempfile
-import yaml
 
 from selenium import webdriver
 import keyring
+import yaml
 
 from amex_com import Amex
 from bank import Bank
@@ -42,9 +42,8 @@ _CONFIG_SCHEMA = Schema({'sources': [_SOURCE_SCHEMA],
                          'ynab': _YNAB_SCHEMA,
                          'keyring': _KEYRING_SCHEMA})
 
-def make_temp_download_dir():
-    user_download_directory = os.path.expanduser('~/Downloads/')
-    return tempfile.mkdtemp(dir=user_download_directory)
+TEMPORARY_DIRECTORY = '~/Downloads'
+
 
 def chrome_driver(temp_download_dir):
     options = webdriver.chrome.options.Options()
@@ -132,7 +131,7 @@ def main(argv=None):
     bank = banks[0]
 
     print 'Starting chrome to do your bidding'
-    temp_download_dir = make_temp_download_dir()
+    temp_download_dir = tempfile.mkdtemp(dir=os.path.expanduser(TEMPORARY_DIRECTORY))
     driver = chrome_driver(temp_download_dir)
     driver.implicitly_wait(10)
 
@@ -153,6 +152,8 @@ def main(argv=None):
         if os.path.exists(temp_download_dir):
             sys.stderr.write(('Temporary directory not removed: {}\n'
                               .format(temp_download_dir)))
+
+    return 0
 
 if __name__ == '__main__':
     main()
