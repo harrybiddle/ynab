@@ -8,10 +8,10 @@ import os
 import shutil
 import sys
 import tempfile
-import yaml
 
-from getpass import getpass
+import getpass
 from selenium import webdriver
+import yaml
 
 from amex_com import Amex
 from bank import Bank
@@ -35,11 +35,11 @@ _TARGET_SCHEMA = {'budget': And(str, len),
 _YNAB_SCHEMA = {'email': And(str, len),
                 'targets': [_TARGET_SCHEMA]}
 _CONFIG_SCHEMA = Schema({'sources': [_SOURCE_SCHEMA],
-                         'ynab': _YNAB_SCHEMA})
+                         'ynab': _YNAB_SCHEMA,
+                         Optional('temp_directory'): str})
 
-def make_temp_download_dir():
-    user_download_directory = os.path.expanduser('~/Downloads/')
-    return tempfile.mkdtemp(dir=user_download_directory)
+DEFAULT_TEMPORARY_DIRECTORY = '~/Downloads'
+
 
 def chrome_driver(temp_download_dir):
     options = webdriver.chrome.options.Options()
@@ -50,7 +50,11 @@ def chrome_driver(temp_download_dir):
 def parse_config(config):
     ''' Raises: SchemaError if the supplied configuration is invalid
     '''
-    return _CONFIG_SCHEMA.validate(config)
+    validated_config = _CONFIG_SCHEMA.validate(config)
+    if 'temp_directory' not in validated_config:
+        d = os.path.expanduser(DEFAULT_TEMPORARY_DIRECTORY)
+        validated_config['temp_directory'] = d
+    return validated_config
 
 def construct_banks_from_config(configs):
     ''' Takes source configuration and returns a list of Bank objects
@@ -62,7 +66,7 @@ def construct_banks_from_config(configs):
         return source_class(config)
     return map(construct_object, configs)
 
-def get_all_secrets_from_user(required_secrets, getpass=getpass):
+def get_all_secrets_from_user(required_secrets):
     ''' Given a dictionary mapping a Bank object to a list of names of secrets,
     we ask the user to supply _all_ of the given secrets as a semi-colon
     separated list. The input dictionary should be ordered, as they are
@@ -92,7 +96,7 @@ def get_all_secrets_from_user(required_secrets, getpass=getpass):
         for secret in secrets:
             prompt = prompt + '\t{} {}\n'.format(bank.full_name, secret)
     sys.stdout.write(prompt)
-    user_inputs = getpass()
+    user_inputs = getpass.getpass()
     inputted_secrets = user_inputs.split(';')
     assert (len(inputted_secrets) == sum([len(secrets) for secrets in required_secrets.values()]))
     ret = {}
@@ -146,7 +150,7 @@ def main(argv=None):
     fetch_secrets([bank, ynab])
 
     print 'Starting chrome to do your bidding'
-    temp_download_dir = make_temp_download_dir()
+    temp_download_dir = tempfile.mkdtemp(dir=config['temp_directory'])
     driver = chrome_driver(temp_download_dir)
     driver.implicitly_wait(10)
 
@@ -167,6 +171,8 @@ def main(argv=None):
         if os.path.exists(temp_download_dir):
             sys.stderr.write(('Temporary directory not removed: {}\n'
                               .format(temp_download_dir)))
+
+    return 0
 
 if __name__ == '__main__':
     main()
