@@ -4,3 +4,5 @@ pep8
 commentjson
 schema
 pyyaml
+mock
+keyring
