@@ -2,9 +2,6 @@ import uuid
 
 class Bank(object):
     def __init__(self, *args, **kwargs):
-        self._init(*args, **kwargs) # redirection to make testing easier
-
-    def _init(self, secrets={}):
         self._uuid = str(uuid.uuid4())
         self._secrets = secrets
 
