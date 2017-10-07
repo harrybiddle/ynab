@@ -49,8 +49,9 @@ class Natwest(Bank):
 
     full_name = 'Natwest'
 
-    def __init__(self, config):
-        super(Natwest, self).__init__(['pin', 'password'])
+    def __init__(self, config, secrets):
+        super(Natwest, self).__init__(secrets)
+        self.validate_secrets('password', 'pin')
         self.customer_number = config['customer_number']
 
     def download_transactions(self, driver, dir):

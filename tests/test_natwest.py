@@ -7,7 +7,6 @@ _PIN = '9750'
 _PASSWORD = 'mycrazyp!asswithatleasttencharacters'
 
 class TestSelectCharacters(unittest.TestCase):
-
     def test_happy_path(self):
         pin_digits = ['Enter the 4th number',
                       'Enter the 2nd number',
@@ -16,9 +15,8 @@ class TestSelectCharacters(unittest.TestCase):
                           'Enter the 7th character',
                           'Enter the 10th character']
 
-        n = natwest.Natwest({'customer_number': _ID})
-        n.extract_secrets({'pin': _PIN,
-                           'password': _PASSWORD})
+        secrets = {'pin': _PIN, 'password': _PASSWORD}
+        n = natwest.Natwest({'customer_number': _ID}, secrets)
 
         a, b = n._select_characters(pin_digits, password_chars)
         self.assertEqual(a, _PIN[3] + _PIN[1] + _PIN[2])

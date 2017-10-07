@@ -1,11 +1,12 @@
 import uuid
 
 class Bank(object):
+    def __init__(self, *args, **kwargs):
+        self._init(*args, **kwargs) # redirection to make testing easier
 
-    def __init__(self, secrets=[]):
+    def _init(self, secrets={}):
         self._uuid = str(uuid.uuid4())
-        self._secrets = dict([(s, None) for s in secrets])
-        self._extract_secrets_success = False
+        self._secrets = secrets
 
     def __hash__(self):
         return hash(self.uuid())
@@ -21,34 +22,22 @@ class Bank(object):
         '''
         return self._uuid
 
-    def extract_secrets(self, secrets):
-        ''' Takes a map of secret name -> secret value and stores
-        the values in this object '''
-        new_secrets = {}
-        for name in self._secrets.keys():
-            value = secrets[name]
-            new_secrets[name] = value
-        self._secrets = new_secrets
-        self._extract_secrets_success = True
+    def validate_secrets(self, *expected):
+        ''' Raises an AssertionError if the list of secret names (given as
+        function arguments) doesn't match exactly the secrets we have '''
+        given = self._secrets.keys()
+        error_msg = ('Given secrets differ from expected. Received\n  {}\nbut '
+                     'expected\n  {}').format(str(given), str(expected))
+        assert set(expected) == set(given), error_msg
+
 
     def secret(self, name):
-        ''' Return the value of the given secret.
+        ''' Return the value of the given secret, e.g.
 
-        Args:
-            name: the name of the secret (string)
+            >> self.secret('password')
+            'pass123'
 
         Raises:
-            KeyError: If this secret wasn't named in the original
-                construction of the Bank object.
-
-        Returns:
-            The value of the secret. If the secret hasn't yet been supplied
-                the value will be None.
+            KeyError if the secret doesn't exist
         '''
         return self._secrets[name]
-
-    def all_secrets(self):
-        ''' Return a list of all secrets named in the original construction
-        of the Bank object.
-        '''
-        return self._secrets.keys()

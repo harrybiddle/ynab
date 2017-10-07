@@ -3,8 +3,7 @@ import unittest
 
 from ynab import bank
 
-class TestBankUUIDs(unittest.TestCase):
-
+class TestUUIDs(unittest.TestCase):
     def test_construction_with_uuid(self):
         b = bank.Bank()
         self.assertTrue(len(b.uuid()) > 0)
@@ -34,27 +33,29 @@ class TestBankUUIDs(unittest.TestCase):
         self.assertEqual(hash(a), hash(a))
         self.assertNotEqual(hash(a), hash(b))
 
-class TestBankSecrets(unittest.TestCase):
+class TestSecrets(unittest.TestCase):
+    def setUp(self):
+        secrets = {'password': 'pass123', 'pin': 1234}
+        self.bank = bank.Bank(secrets)
 
-    def test_secret_registration(self):
-        b = bank.Bank(['password'])
-        secrets = {'password': 'mypass'}
-        b.extract_secrets(secrets)
-        self.assertEqual('mypass', b.secret('password'))
+    def test_validate_secrets_success(self):
+        self.bank.validate_secrets('password', 'pin')
 
-    def test_error_on_non_existent_secret(self):
-        b = bank.Bank(['password'])
+    def test_validate_unrecognised_secret_fails(self):
+        with self.assertRaises(AssertionError):
+            self.bank.validate_secrets('password', 'foo')
+
+    def test_validate_too_few_secrets_fails(self):
+        with self.assertRaises(AssertionError):
+            self.bank.validate_secrets('password')
+
+    def test_secret_lookup_success(self):
+        self.assertEqual('pass123', self.bank.secret('password'))
+        self.assertEqual(1234, self.bank.secret('pin'))
+
+    def test_secret_lookup_failure(self):
         with self.assertRaises(KeyError):
-            b.secret('foo')
-
-    def test_default_secret_is_none(self):
-        b = bank.Bank(['password'])
-        self.assertEqual(None, b.secret('password'))
-
-    def test_all_secrets(self):
-        s = ['foo', 'bar']
-        b = bank.Bank(s)
-        self.assertEqual(s, b.all_secrets())
+            self.bank.secret('foo')
 
 if __name__ == '__main__':
     unittest.main()

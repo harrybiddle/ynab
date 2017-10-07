@@ -8,8 +8,9 @@ from bank import Bank
 class Halifax(Bank):
     full_name = 'Halifax'
 
-    def __init__(self, config):
-        super(Halifax, self).__init__(['password', 'challenge'])
+    def __init__(self, config, secrets):
+        super(Halifax, self).__init__(secrets)
+        self.validate_secrets('password', 'challenge')
         self.username = config['username']
 
     def download_transactions(self, driver, dir):
