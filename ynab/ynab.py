@@ -25,7 +25,8 @@ from schema import Schema, And, Or, Optional
 _BANKS = {'amex': Amex,
           'halifax': Halifax,
           'hsbc': HSBC,
-          'natwest': Natwest}
+          'natwest': Natwest,
+          'ynab': YNAB}
 
 _SOURCE_SCHEMA = {'type': Or(*_BANKS.keys()),
                   Optional('secrets_keys'): {str: str},
@@ -115,10 +116,17 @@ def main(argv=None):
         loaded_config = yaml.load(conf)
     config = parse_config(loaded_config)
 
-    ynab = YNAB(config['ynab'])
+    # construct banks
     banks = fetch_secrets_and_construct_banks(_BANKS,
                                               config['sources'],
                                               config['keyring']['username'])
+
+    # construct ynab - a fake source
+    fake_source_config = config['ynab']
+    fake_source_config['type'] = 'ynab'
+    ynab = fetch_secrets_and_construct_banks({'ynab': YNAB},
+                                              [fake_source_config],
+                                              config['keyring']['username'])[0]
 
     # For now, only support one source and one target
     bank = banks[0]
