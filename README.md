@@ -98,7 +98,7 @@ Configuration
    For example, if you have chosen Amex you will put in two entries:
 
    1. Keychain Item Name: `amex_password`, Account Name: `ynab`, Password: `<your amex password>`
-   1. Keychain Item Name: `amex_password`, Account Name: `ynab`, Password: `<your ynab password>`
+   1. Keychain Item Name: `ynab_password`, Account Name: `ynab`, Password: `<your ynab password>`
 
 Usage
 -------------
