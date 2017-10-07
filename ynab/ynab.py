@@ -25,8 +25,7 @@ from schema import Schema, And, Or, Optional
 _BANKS = {'amex': Amex,
           'halifax': Halifax,
           'hsbc': HSBC,
-          'natwest': Natwest,
-          'ynab': YNAB}
+          'natwest': Natwest}
 
 _SOURCE_SCHEMA = {'type': Or(*_BANKS.keys()),
                   Optional('secrets_keys'): {str: str},
