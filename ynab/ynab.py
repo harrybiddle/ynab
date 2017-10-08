@@ -10,7 +10,7 @@ import sys
 import tempfile
 
 from selenium import webdriver
-import keyring
+import keyring_secrets
 import yaml
 
 from amex_com import Amex
@@ -55,38 +55,15 @@ def parse_config(config):
     '''
     return _CONFIG_SCHEMA.validate(config)
 
-def get_secrets_from_keyring(secret_names_and_keys, username):
-    ''' Performs a lookup in the system keyring for the given secret(s).
-
-    Args:
-        secret_names_and_keys: a dictionary mapping secret name to the key in
-            the system keyring, for example {'password': 'ynab_password'}
-
-    Returns:
-        A dictionary of secret_name to the value, for example
-            {'password': 'pass1234'}
-
-    Raises:
-        KeyError: at least one key doesn't exist in the keyring
-    '''
-    ret = {}
-    for secret_name, service_name in secret_names_and_keys.iteritems():
-        secret_value = keyring.get_password(service_name, username)
-        if secret_value is None:
-            raise KeyError(('The key {} for user {} cannot be found in the '
-                            'keyring').format(service_name, username))
-        ret[secret_name] = secret_value
-    return ret
-
 def copy_without_key(d, key_to_skip):
     ''' Returns a copy of the dictionary d, except without one specified key '''
     return {i:d[i] for i in d if i != key_to_skip}
 
-def fetch_secrets_and_construct_bank(cls, config, keyring_username):
+def fetch_secrets_and_construct_bank(clazz, config, keyring_username):
     secrets_keys = config.get('secrets_keys', {})
-    secrets = get_secrets_from_keyring(secrets_keys, keyring_username)
+    secrets = keyring_secrets.get_secrets(secrets_keys, keyring_username)
     config_without_secrets_keys = copy_without_key(config, 'secrets_keys')
-    return cls(config_without_secrets_keys, secrets)
+    return clazz(config_without_secrets_keys, secrets)
 
 def fetch_secrets_and_construct_banks(configs, keyring_username):
     ''' Takes a list of source configurations and constructs Banks objects
@@ -95,8 +72,8 @@ def fetch_secrets_and_construct_banks(configs, keyring_username):
     '''
     def construct(config):
         bank_type = config['type']
-        cls = _BANKS[bank_type]
-        return fetch_secrets_and_construct_bank(cls, config, keyring_username)
+        clazz = _BANKS[bank_type]
+        return fetch_secrets_and_construct_bank(clazz, config, keyring_username)
     return map(construct, configs)
 
 def get_argument_parser():
