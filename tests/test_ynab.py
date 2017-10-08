@@ -3,6 +3,7 @@ import unittest
 from collections import defaultdict
 
 from mock import patch, MagicMock
+import keyring_secrets
 import yaml
 
 from ynab import ynab
@@ -61,7 +62,7 @@ class TestGetSecretsFromKeyring(unittest.TestCase):
     ''' Tests the part of the code that fetches secrets from the keyring '''
 
     def call_get_secrets_from_keyring(self, secrets):
-        return ynab.get_secrets_from_keyring(secrets, USERNAME)
+        return keyring_secrets.get_secrets(secrets, USERNAME)
 
     def test_empty_dictionary(self):
         self.assertEqual({}, self.call_get_secrets_from_keyring({}))
