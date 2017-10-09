@@ -3,10 +3,10 @@ import unittest
 from collections import defaultdict
 
 from mock import patch, MagicMock
-import keyring_secrets
 import yaml
 
 from ynab import ynab
+from ynab import keyring_secrets
 
 SECRET_NAME1 = 'password'
 SECRET_NAME2 = 'pin'
