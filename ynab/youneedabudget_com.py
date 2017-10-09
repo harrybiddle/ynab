@@ -13,8 +13,9 @@ class YNAB(Bank):
 
     full_name = 'YNAB'
 
-    def __init__(self, config):
-        super(YNAB, self).__init__(['password'])
+    def __init__(self, config, secrets):
+        super(YNAB, self).__init__(secrets)
+        self.validate_secrets('password')
         self.email = config['email']
         assert (len(config['targets']) == 1, 'Requires exactly one target')
         self.target_config = config['targets'][0]

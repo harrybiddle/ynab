@@ -6,8 +6,9 @@ from bank import Bank
 class Amex(Bank):
     full_name = 'American Express'
 
-    def __init__(self, config):
-        super(Amex, self).__init__(['password'])
+    def __init__(self, config, secrets):
+        super(Amex, self).__init__(secrets)
+        self.validate_secrets('password')
         self.username = config['username']
 
     def download_transactions(self, driver, dir):

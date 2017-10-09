@@ -9,14 +9,14 @@ Installation
 
 Requirements:
 
+1. A supported backend for [keyring](https://pypi.python.org/pypi/keyring). The Mac Keychain or Windows Credential Manager will do.
 1. [Google Chrome](https://www.google.com/chrome).
-1. [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/). For a Mac with [Homebrew](https://brew.sh), this can be done with `brew install chromedriver`. 
+1. [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/). For a Mac with [Homebrew](https://brew.sh), this can be done with `brew install chromedriver`.
 1. Python 2.7.
 
 Optional:
 
 1. [pip](https://pip.pypa.io) for easy installation of the script.
-1. [1Password](https://1password.com/) and [sudolikeaboss](https://github.com/ravenac95/sudolikeaboss) for easy password entry.
 
 To install the script:
 
@@ -33,30 +33,77 @@ echo 'PATH=$PATH:~/Library/Python/2.7/bin/' >> ~/.bash_profile
 hash -r
 ```
 
+Configuration
+-------------
+
+1. Create a file `~/.ynab.conf` with the following contents. Fill in any entries in angled brackets (`<`, `>`).
+   Don't fill in any of the `secrets_keys` entires, we'll put this in your keyring in the next step!
+
+   ```yml
+   ynab:
+     email: <email@domain.com>
+     secrets_keys:
+       password: ynab_password
+     targets:
+       - budget: <My Budget>
+         account: <My Account>
+   keyring:
+     username: ynab
+   ```
+
+2. Choose *one bank* from the below list, fill in any entries in angled brackets, and add it to `~/.ynab.conf`.
+   Again, don't fill in any of the `secrets_keys` entires!
+
+   - Amex:
+     ```yml
+     sources:
+       - type: amex
+         username: <amex_username>
+         secrets_keys:
+           password: amex_password
+     ```
+
+   - Halifax:
+     ```yml
+     sources:
+       - type: halifax
+         username: <halifax_username>
+         secrets_keys:
+           password: halifax_password
+           challenge: halifax_challenge_password
+     ```
+
+   - HSBC:
+     ```yml
+     sources:
+       - type: hsbc
+         username: <hsbc_username>
+         secrets_keys:
+           memorable_question: hsbc_memorable_question
+           security_code: hsbc_security_code
+      ```
+
+   - Natwest:
+     ```yml
+     sources:
+       - type: natwest
+         customer_number: <natwest_customer_number>
+         secrets_keys:
+           - password: natwest_password
+           - pin: natwest_pin
+     ```
+
+1. Open your keyring backend---on a Mac, this will be the KeyChain app--and create one entry for each secret for your bank and one for your YNAB password with the account 'ynab'.
+
+   For example, if you have chosen Amex you will put in two entries:
+
+   1. Keychain Item Name: `amex_password`, Account Name: `ynab`, Password: `<your amex password>`
+   1. Keychain Item Name: `ynab_password`, Account Name: `ynab`, Password: `<your ynab password>`
+
 Usage
------
+-------------
 
-Create a file `~/.ynab.conf` that contains the banks you wish to fetch ("sources") and the some information about where to upload it on YNAB. The full list of available configuration is as follows. You should supply *exactly one source*:
-
-```yml
-sources:
-  - type: amex
-    username: john.smith
-  - type: halifax
-    username: john.smith
-  - type: hsbc
-    username: john.smith
-  - type: natwest
-    customer_number: 12345678
-ynab:
-  email: email@domain.com
-  targets:
-    - budget: My Budget
-      account: My Account
-```
-
-Then run the command `ynab`. It will prompt you for a semicolon-separated list of secrets (passwords, etc).
-These are requested in the order that they were written in the configuration file.
+Simply run the command `ynab`.
 
 Development
 -----------

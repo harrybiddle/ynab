@@ -6,8 +6,9 @@ class HSBC(Bank):
 
     full_name = 'HSBC'
 
-    def __init__(self, config):
-        super(Halifax, self).__init__(['memorable question', 'security code'])
+    def __init__(self, config, secrets):
+        super(HSBC, self).__init__(secrets)
+        self.validate_secrets('memorable_question', 'security_code')
         self.username = config['username']
 
     def download_transactions(self, driver, dir):
@@ -39,10 +40,10 @@ class HSBC(Bank):
 
         # fill in memorable question and 2FA
         memorable = driver.find_element_by_id('memorableAnswer')
-        memorable.send_keys(self.secret('memorable question'))
+        memorable.send_keys(self.secret('memorable_question'))
 
         code = driver.find_element_by_id('idv_OtpCredential')
-        code.send_keys(self.secret('security code'))
+        code.send_keys(self.secret('security_code'))
 
         # complete login
         driver.find_element_by_class_name('submit_input').click()

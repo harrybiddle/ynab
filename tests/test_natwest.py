@@ -21,9 +21,8 @@ class TestSelectCharacters(unittest.TestCase):
                           'Enter the 7th character',
                           'Enter the 10th character']
 
-        n = natwest.Natwest({'customer_number': _ID})
-        n.extract_secrets({'pin': _PIN,
-                           'password': _PASSWORD})
+        secrets = {'pin': _PIN, 'password': _PASSWORD}
+        n = natwest.Natwest({'customer_number': _ID}, secrets)
 
         a, b = n._select_characters(pin_digits, password_chars)
         self.assertEqual(a, _PIN[3] + _PIN[1] + _PIN[2])
@@ -35,17 +34,29 @@ class EndToEndTest(unittest.TestCase):
     configuration = {
             'sources': [{
                 'type': 'natwest',
-                'customer_number': '12345678'
+                'customer_number': '12345678',
+                'secrets_keys': {
+                    'password': 'password',
+                    'pin': 'pin'
+                }
             }],
             'ynab': {
                 'email': 'email@domain.com',
+                'secrets_keys': {
+                    'password': 'password'
+                },
                 'targets': [{
                     'budget': 'My Budget',
                     'account': 'My Account'
                 }]
             },
-            'temp_directory': tempfile.gettempdir()
+            'keyring': {
+                'username': 'johnsnow'
+            }
         }
+
+    def setUp(self):
+        ynab.TEMPORARY_DIRECTORY = tempfile.gettempdir()
 
     def mock_necessary_website_responses(self, chrome_driver_mock):
         ''' Provides return values for calls to driver.find_element_by_id that
@@ -68,10 +79,10 @@ class EndToEndTest(unittest.TestCase):
             mock_function
 
     @patch('glob.glob', return_value=['file.ofx'])
-    @patch('getpass.getpass', return_value='password;1234;password')
+    @patch('keyring.get_password', return_value='password')
     @patch('selenium.webdriver.support.ui.Select')
     @patch('selenium.webdriver.Chrome')
-    def test_ete(self, chrome_driver, select, getpass, glob):
+    def test_ete(self, chrome_driver, *unused):
         self.mock_necessary_website_responses(chrome_driver)
         with tempfile.NamedTemporaryFile() as serialised_configuration:
             yaml.dump(self.configuration, serialised_configuration)

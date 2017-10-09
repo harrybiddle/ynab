@@ -9,8 +9,8 @@ import shutil
 import sys
 import tempfile
 
-import getpass
 from selenium import webdriver
+import keyring_secrets
 import yaml
 
 from amex_com import Amex
@@ -28,17 +28,20 @@ _BANKS = {'amex': Amex,
           'natwest': Natwest}
 
 _SOURCE_SCHEMA = {'type': Or(*_BANKS.keys()),
-                  str: object}
+                  Optional('secrets_keys'): {str: str},
+                  Optional(str): object}
 _TARGET_SCHEMA = {'budget': And(str, len),
                   'account': And(str, len),
                   Optional('id'): object}
 _YNAB_SCHEMA = {'email': And(str, len),
-                'targets': [_TARGET_SCHEMA]}
+                'targets': [_TARGET_SCHEMA],
+                'secrets_keys': {'password': str}}
+_KEYRING_SCHEMA = {'username': str}
 _CONFIG_SCHEMA = Schema({'sources': [_SOURCE_SCHEMA],
                          'ynab': _YNAB_SCHEMA,
-                         Optional('temp_directory'): str})
+                         'keyring': _KEYRING_SCHEMA})
 
-DEFAULT_TEMPORARY_DIRECTORY = '~/Downloads'
+TEMPORARY_DIRECTORY = '~/Downloads'
 
 
 def chrome_driver(temp_download_dir):
@@ -50,77 +53,28 @@ def chrome_driver(temp_download_dir):
 def parse_config(config):
     ''' Raises: SchemaError if the supplied configuration is invalid
     '''
-    validated_config = _CONFIG_SCHEMA.validate(config)
-    if 'temp_directory' not in validated_config:
-        d = os.path.expanduser(DEFAULT_TEMPORARY_DIRECTORY)
-        validated_config['temp_directory'] = d
-    return validated_config
+    return _CONFIG_SCHEMA.validate(config)
 
-def construct_banks_from_config(configs):
-    ''' Takes source configuration and returns a list of Bank objects
-    constructed from it.
+def copy_without_key(d, key_to_skip):
+    ''' Returns a copy of the dictionary d, except without one specified key '''
+    return {i:d[i] for i in d if i != key_to_skip}
+
+def fetch_secrets_and_construct_bank(class_, config, keyring_username):
+    secrets_keys = config.get('secrets_keys', {})
+    secrets = keyring_secrets.get_secrets(secrets_keys, keyring_username)
+    config_without_secrets_keys = copy_without_key(config, 'secrets_keys')
+    return class_(config_without_secrets_keys, secrets)
+
+def fetch_secrets_and_construct_banks(configs, keyring_username):
+    ''' Takes a list of source configurations and constructs Banks objects
+    according to the 'types' dictionary. As part of this, the keyring will be
+    queried for any required secrets.
     '''
-    def construct_object(config):
-        source_type = config['type']
-        source_class = _BANKS[source_type]
-        return source_class(config)
-    return map(construct_object, configs)
-
-def get_all_secrets_from_user(required_secrets):
-    ''' Given a dictionary mapping a Bank object to a list of names of secrets,
-    we ask the user to supply _all_ of the given secrets as a semi-colon
-    separated list. The input dictionary should be ordered, as they are
-    requested from the user in the order supplied. Returns a map of Bank to
-    a map of secret name -> supplied value; with the banks in the same order
-    as supplied.
-
-    For example, given this input:
-
-        {Bank1: ['password', 'pin'],
-         Bank2: ['password']}
-
-    The user will be asked to provide a semi-colon separated list of
-    Bank1/password, Bank1/pin, Bank2/password. If they were to supply
-
-        'apples;1234;oranges'
-
-    Then the return value would be
-
-        {Bank1: {'password': 'apples',
-                 'pin': '1234'},
-         Bank2: {'password': 'oranges'}}
-    '''
-    ret = OrderedDict()
-    prompt = 'Enter a semicolon-separated list of:\n'
-    for bank, secrets in required_secrets.iteritems():
-        for secret in secrets:
-            prompt = prompt + '\t{} {}\n'.format(bank.full_name, secret)
-    sys.stdout.write(prompt)
-    user_inputs = getpass.getpass()
-    inputted_secrets = user_inputs.split(';')
-    assert (len(inputted_secrets) == sum([len(secrets) for secrets in required_secrets.values()]))
-    ret = {}
-    i = 0
-    for bank, secrets in required_secrets.iteritems():
-        d = {}
-        for secret in secrets:
-            d[secret] = inputted_secrets[i]
-            i = i + 1
-        ret[bank] = d
-    return ret
-
-def fetch_secrets(banks):
-    ''' Receives a list of Bank objects, and constructs a list of the total
-    secrets required by all of them. We fetch these secrets from the user,
-    then pass them to the Bank objects. Upon function exit the Bank objects
-    will therefore be endowed with the secrets they require. When the user
-    is prompted for the secrets, they will be prompted in the order that the
-    Banks were given to this function, so ensure that the iterable is ordered
-    '''
-    required_secrets = OrderedDict([(b, b.all_secrets()) for b in banks])
-    secrets = get_all_secrets_from_user(required_secrets)
-    for b, s in secrets.iteritems():
-        b.extract_secrets(s)
+    def construct(config):
+        bank_type = config['type']
+        class_ = _BANKS[bank_type]
+        return fetch_secrets_and_construct_bank(class_, config, keyring_username)
+    return map(construct, configs)
 
 def get_argument_parser():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -140,17 +94,18 @@ def main(argv=None):
         loaded_config = yaml.load(conf)
     config = parse_config(loaded_config)
 
-    ynab = YNAB(config['ynab'])
-    banks = construct_banks_from_config(config['sources'])
+    # construct banks
+    keyring_username = config['keyring']['username']
+    banks = fetch_secrets_and_construct_banks(config['sources'], keyring_username)
+
+    # construct ynab
+    ynab = fetch_secrets_and_construct_bank(YNAB, config['ynab'], keyring_username)
 
     # For now, only support one source and one target
     bank = banks[0]
-    print 'Fetching recent transactions from {}'.format(bank.full_name)
-
-    fetch_secrets([bank, ynab])
 
     print 'Starting chrome to do your bidding'
-    temp_download_dir = tempfile.mkdtemp(dir=config['temp_directory'])
+    temp_download_dir = tempfile.mkdtemp(dir=os.path.expanduser(TEMPORARY_DIRECTORY))
     driver = chrome_driver(temp_download_dir)
     driver.implicitly_wait(10)
 
