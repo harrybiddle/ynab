@@ -59,11 +59,11 @@ def copy_without_key(d, key_to_skip):
     ''' Returns a copy of the dictionary d, except without one specified key '''
     return {i:d[i] for i in d if i != key_to_skip}
 
-def fetch_secrets_and_construct_bank(clazz, config, keyring_username):
+def fetch_secrets_and_construct_bank(class_, config, keyring_username):
     secrets_keys = config.get('secrets_keys', {})
     secrets = keyring_secrets.get_secrets(secrets_keys, keyring_username)
     config_without_secrets_keys = copy_without_key(config, 'secrets_keys')
-    return clazz(config_without_secrets_keys, secrets)
+    return class_(config_without_secrets_keys, secrets)
 
 def fetch_secrets_and_construct_banks(configs, keyring_username):
     ''' Takes a list of source configurations and constructs Banks objects
@@ -72,8 +72,8 @@ def fetch_secrets_and_construct_banks(configs, keyring_username):
     '''
     def construct(config):
         bank_type = config['type']
-        clazz = _BANKS[bank_type]
-        return fetch_secrets_and_construct_bank(clazz, config, keyring_username)
+        class_ = _BANKS[bank_type]
+        return fetch_secrets_and_construct_bank(class_, config, keyring_username)
     return map(construct, configs)
 
 def get_argument_parser():
