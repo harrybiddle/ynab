@@ -5,6 +5,8 @@ import time
 
 from bank import Bank
 
+CHALLENGE_DESCRIPTION_CLASS_NAME = 'inner'
+
 class Halifax(Bank):
     full_name = 'Halifax'
 
@@ -77,7 +79,7 @@ class Halifax(Bank):
         # Please enter characters X, Y and Z from your memorable information then
         # click the continue button.\nWe will never ask you to enter your FULL
         # memorable information.\nThis sign in step improves your security.
-        description = driver.find_element_by_class_name('inner').text
+        description = driver.find_element_by_class_name(CHALLENGE_DESCRIPTION_CLASS_NAME).text
 
         description = description[:34]
         match = re.match('Please enter characters ([1-8]), ([1-8]) and ([1-8])', description)

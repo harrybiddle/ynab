@@ -1,4 +1,4 @@
-from selenium.webdriver import ActionChains
+import selenium.webdriver
 import fileutils
 
 from bank import Bank
@@ -46,7 +46,7 @@ class Amex(Bank):
         tab = driver.find_element_by_id('gb_myca_pc_statement')
         export = driver.find_element_by_id('gb_myca_pc_statement_export_statement_data')
 
-        action = ActionChains(driver)
+        action = selenium.webdriver.ActionChains(driver)
         action.move_to_element(tab)
         action.click(export)
         action.perform()
