@@ -11,49 +11,17 @@ import tempfile
 
 from selenium import webdriver
 import keyring_secrets
-import yaml
+import config_schema
 
-from amex_com import Amex
-from bank import Bank
-from halifax_com import Halifax
-from hsbc_com import HSBC
-from natwest_com import Natwest
 from youneedabudget_com import YNAB
 
-from schema import Schema, And, Or, Optional
-
-_BANKS = {'amex': Amex,
-          'halifax': Halifax,
-          'hsbc': HSBC,
-          'natwest': Natwest}
-
-_SOURCE_SCHEMA = {'type': Or(*_BANKS.keys()),
-                  Optional('secrets_keys'): {str: str},
-                  Optional(str): object}
-_TARGET_SCHEMA = {'budget': And(str, len),
-                  'account': And(str, len),
-                  Optional('id'): object}
-_YNAB_SCHEMA = {'email': And(str, len),
-                'targets': [_TARGET_SCHEMA],
-                'secrets_keys': {'password': str}}
-_KEYRING_SCHEMA = {'username': str}
-_CONFIG_SCHEMA = Schema({'sources': [_SOURCE_SCHEMA],
-                         'ynab': _YNAB_SCHEMA,
-                         'keyring': _KEYRING_SCHEMA})
-
 TEMPORARY_DIRECTORY = '~/Downloads'
-
 
 def chrome_driver(temp_download_dir):
     options = webdriver.chrome.options.Options()
     prefs = {'download.default_directory': temp_download_dir}
     options.add_experimental_option('prefs', prefs)
     return webdriver.Chrome(chrome_options=options)
-
-def parse_config(config):
-    ''' Raises: SchemaError if the supplied configuration is invalid
-    '''
-    return _CONFIG_SCHEMA.validate(config)
 
 def copy_without_key(d, key_to_skip):
     ''' Returns a copy of the dictionary d, except without one specified key '''
@@ -72,7 +40,7 @@ def fetch_secrets_and_construct_banks(configs, keyring_username):
     '''
     def construct(config):
         bank_type = config['type']
-        class_ = _BANKS[bank_type]
+        class_ = config_schema.BANKS[bank_type]
         return fetch_secrets_and_construct_bank(class_, config, keyring_username)
     return map(construct, configs)
 
@@ -90,9 +58,7 @@ def main(argv=None):
     parser = get_argument_parser()
     args = parser.parse_args(argv)
 
-    with open(args.configuration_file) as conf:
-        loaded_config = yaml.load(conf)
-    config = parse_config(loaded_config)
+    config = config_schema.load_config(args.configuration_file)
 
     # construct banks
     keyring_username = config['keyring']['username']
