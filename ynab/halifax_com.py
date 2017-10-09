@@ -17,7 +17,7 @@ class Halifax(Bank):
         self._start_download(driver)
         paths = self._wait_until_download_complete(dir)
 
-        return self._invert_files(paths)
+        return self._invert_files(paths)[0]
 
     def _start_download(self, driver):
         self._go_to_website(driver)
@@ -27,7 +27,7 @@ class Halifax(Bank):
 
     def _wait_until_download_complete(self, dir):
         return fileutils.wait_for_file_with_prefix(dir, '.qif',
-                                                   '5253030007970668')[0]
+                                                   '5253030007970668')
 
     def _invert_files(self, paths):
         ''' Reads files of bank transaction from disks, inverts the sign of the
