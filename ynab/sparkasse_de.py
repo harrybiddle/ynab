@@ -52,6 +52,11 @@ def convert_csv(input_stream, output_stream):
         memo = row[SCHEMA['Purpose']]
         amount_string = row[SCHEMA['Amount']]
 
+        # skip if there is an empty date - this is a transaction
+        # that has not yet gone through
+        if date_string == '':
+            continue
+
         # parse values
         amount = comma_string_to_float(amount_string)
         inflow = max(0.0, amount)
