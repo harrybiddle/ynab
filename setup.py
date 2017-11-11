@@ -30,7 +30,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='5',
+    version='6',
 
     description='Automate downloading and uploading transactions to YNAB',
     long_description=long_description,
@@ -92,7 +92,7 @@ setup(
     # for example:
     # $ pip install -e .[dev,test]
     extras_require={
-        'test': ['mock'],
+        'test': ['mock', 'pep8'],
     },
 
     # If there are data files included in your packages that need to be

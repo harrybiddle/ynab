@@ -5,6 +5,8 @@ import time
 
 from bank import Bank
 
+CHALLENGE_DESCRIPTION_CLASS_NAME = 'inner'
+
 class Halifax(Bank):
     full_name = 'Halifax'
 
@@ -17,7 +19,7 @@ class Halifax(Bank):
         self._start_download(driver)
         paths = self._wait_until_download_complete(dir)
 
-        return self._invert_files(paths)
+        return self._invert_files(paths)[0]
 
     def _start_download(self, driver):
         self._go_to_website(driver)
@@ -27,7 +29,7 @@ class Halifax(Bank):
 
     def _wait_until_download_complete(self, dir):
         return fileutils.wait_for_file_with_prefix(dir, '.qif',
-                                                   '5253030007970668')[0]
+                                                   '5253030007970668')
 
     def _invert_files(self, paths):
         ''' Reads files of bank transaction from disks, inverts the sign of the
@@ -77,7 +79,7 @@ class Halifax(Bank):
         # Please enter characters X, Y and Z from your memorable information then
         # click the continue button.\nWe will never ask you to enter your FULL
         # memorable information.\nThis sign in step improves your security.
-        description = driver.find_element_by_class_name('inner').text
+        description = driver.find_element_by_class_name(CHALLENGE_DESCRIPTION_CLASS_NAME).text
 
         description = description[:34]
         match = re.match('Please enter characters ([1-8]), ([1-8]) and ([1-8])', description)

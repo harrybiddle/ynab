@@ -51,6 +51,14 @@ def get_argument_parser():
                         help='defaults to ~/.ynab.conf')
     return parser
 
+def quit_driver_continue_on_exception(driver):
+    try:
+        driver.quit()
+        return 0
+    except:
+        sys.stderr.write(str(e) + '\n')
+        return 1
+
 def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
@@ -84,16 +92,14 @@ def main(argv=None):
 
         print 'Uploading transactions to ynab'
         ynab.upload_transactions(bank, driver, [path])
+    finally:
+        ret_code = quit_driver_continue_on_exception(driver)
 
         print 'Removing the remaints'
-        shutil.rmtree(temp_download_dir)
-    finally:
-        driver.quit()
         if os.path.exists(temp_download_dir):
-            sys.stderr.write(('Temporary directory not removed: {}\n'
-                              .format(temp_download_dir)))
+            shutil.rmtree(temp_download_dir)
 
-    return 0
+    return ret_code
 
 if __name__ == '__main__':
     main()

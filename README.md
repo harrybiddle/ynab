@@ -89,8 +89,8 @@ Configuration
        - type: natwest
          customer_number: <natwest_customer_number>
          secrets_keys:
-           - password: natwest_password
-           - pin: natwest_pin
+           password: natwest_password
+           pin: natwest_pin
      ```
 
 1. Open your keyring backend---on a Mac, this will be the KeyChain app--and create one entry for each secret for your bank and one for your YNAB password with the account 'ynab'.
