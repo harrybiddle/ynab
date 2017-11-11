@@ -4,6 +4,7 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as conditions
+from selenium.webdriver.common.keys import Keys
 
 from bank import Bank
 
@@ -40,11 +41,8 @@ class YNAB(Bank):
         driver.find_element_by_xpath('//input[@placeholder="email address"]') \
               .send_keys(email)
 
-        driver.find_element_by_xpath('//input[@placeholder="password"]') \
-              .send_keys(self.secret('password'))
-
-        driver.find_element_by_xpath('//button[text()="Sign In"]') \
-              .click()
+        p = driver.find_element_by_xpath('//input[@placeholder="password"]') \
+                  .send_keys(self.secret('password') + Keys.RETURN)
 
 
     def _navigate_to_upload_screen(self, driver, budget, account):
