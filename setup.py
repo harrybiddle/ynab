@@ -92,7 +92,7 @@ setup(
     # for example:
     # $ pip install -e .[dev,test]
     extras_require={
-        'test': ['mock'],
+        'test': ['mock', 'pep8'],
     },
 
     # If there are data files included in your packages that need to be
