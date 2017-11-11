@@ -4,7 +4,7 @@ from bank import Bank
 import fileutils
 
 # text box on first page to enter customer number
-CUSTOMER_NUMBER = 'ctl00$mainContent$LI5TABA$DBID_edit'
+CUSTOMER_NUMBER = 'ctl00$mainContent$LI5TABA$CustomerNumber_edit'
 
 # button to log in
 LOG_IN_BUTTON = 'ctl00$mainContent$Tab1$next_text_button_button'
