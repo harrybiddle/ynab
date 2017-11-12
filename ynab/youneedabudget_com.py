@@ -18,7 +18,7 @@ class YNAB(Bank):
         super(YNAB, self).__init__(secrets)
         self.validate_secrets('password')
         self.email = config['email']
-        assert (len(config['targets']) == 1, 'Requires exactly one target')
+        assert len(config['targets']) == 1, 'Requires exactly one target'
         self.target_config = config['targets'][0]
 
     def upload_transactions(self, bank, driver, paths):
