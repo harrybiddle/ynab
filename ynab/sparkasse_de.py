@@ -6,8 +6,15 @@ import os.path
 import math
 
 from bank import Bank
+import fileutils
 
 class SparkasseHeidelberg(Bank):
+    ''' TODO:
+     - Handle the case where there is already a .CSV file in the downloads directory
+     - Switch to writing OFX files as these are better-supported by YNAB
+     - Make the start date of the download configurable (and set in config!): at the moment
+       we use the website default
+    '''
 
     full_name = 'SparkasseHeidelberg'
 
@@ -33,30 +40,30 @@ class SparkasseHeidelberg(Bank):
     def login(self, driver):
         driver.get('https://www.sparkasse-heidelberg.de/en/home.html')
 
-        login_label = unique(driver.find_elements_by_xpath('//label[starts-with(text(),"Login name")]'),
-                             failure_msg='Cannot locate login textbox')
+        login_label = self.unique(driver.find_elements_by_xpath('//label[starts-with(text(),"Login name")]'),
+                                  failure_msg='Cannot locate login textbox')
         login_id = login_label.get_attribute('for')
 
-        login = unique(driver.find_elements_by_id(login_id))
+        login = self.unique(driver.find_elements_by_id(login_id))
         login.send_keys(self.username)
 
-        pin = unique(driver.find_elements_by_xpath('//input[@type="password"]'))
+        pin = self.unique(driver.find_elements_by_xpath('//input[@type="password"]'))
 
         pin.send_keys(self.secret('pin'))
 
-        submit = unique(driver.find_elements_by_xpath('//input[@type="submit"]'))
+        submit = self.unique(driver.find_elements_by_xpath('//input[@type="submit"]'))
         submit.click()
 
     def assert_there_is_only_one_account(self, driver):
         # check there is only one table on the page
-        unique(driver.find_elements_by_xpath('//table[contains(@class, "table_widget_finanzstatus")]'))
+        self.unique(driver.find_elements_by_xpath('//table[contains(@class, "table_widget_finanzstatus")]'))
 
         # count the rows in the table
         rows = len(driver.find_elements_by_xpath('//table[contains(@class, "table_widget_finanzstatus")]/tbody/tr'))
         assert rows == 4, 'Too many rows in finance status table. Do you have more than one account? This script only supports one account'
 
     def navigate_to_transactions_table(self, driver):
-        transactions = unique(driver.find_elements_by_xpath('//input[@title="Transaction search"]'))
+        transactions = self.unique(driver.find_elements_by_xpath('//input[@title="Transaction search"]'))
         transactions.click()
 
     # def set_start_date_back_by_thirty_dates(self, driver):
@@ -77,15 +84,15 @@ class SparkasseHeidelberg(Bank):
     #     update.click()
 
     def initiate_download(self, driver):
-        export = unique(driver.find_elements_by_xpath('//span[@title="Export"]'))
+        export = self.unique(driver.find_elements_by_xpath('//span[@title="Export"]'))
         export.click()
 
-        csv_camt = unique(driver.find_elements_by_xpath('//input[@value="CSV-CAMT-Format"]'))
+        csv_camt = self.unique(driver.find_elements_by_xpath('//input[@value="CSV-CAMT-Format"]'))
         csv_camt.click()
 
     def locate_csv_and_transform_to_ynab_format(self, dir):
-        csv_file = unique(fileutils.wait_for_file(dir, '.csv'),
-                          failure_msg='Found multiple CSV files - expected only one')
+        csv_file = self.unique(fileutils.wait_for_file(dir, '.CSV'),
+                               failure_msg='Found multiple CSV files - expected only one')
 
         output_csv_file = '-ynab_friendly'.join(os.path.splitext(csv_file))
 
