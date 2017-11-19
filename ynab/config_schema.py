@@ -6,11 +6,13 @@ from bank import Bank
 from halifax_com import Halifax
 from hsbc_com import HSBC
 from natwest_com import Natwest
+from sparkasse_de import SparkasseHeidelberg
 
 BANKS = {'amex': Amex,
           'halifax': Halifax,
           'hsbc': HSBC,
-          'natwest': Natwest}
+          'natwest': Natwest,
+          'sparkasse-heidelberg': SparkasseHeidelberg}
 
 _SOURCE_SCHEMA = {'type': Or(*BANKS.keys()),
                   Optional('secrets_keys'): {str: str},

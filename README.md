@@ -93,6 +93,15 @@ Configuration
            pin: natwest_pin
      ```
 
+   - Sparkasse-Heidelberg:
+     ```yml
+     sources:
+       - type: sparkasse-heidelberg
+         username: <sparkasse_username>
+         secrets_keys:
+           pin: sparkasse_pin
+     ```
+
 1. Open your keyring backend---on a Mac, this will be the KeyChain app--and create one entry for each secret for your bank and one for your YNAB password with the account 'ynab'.
 
    For example, if you have chosen Amex you will put in two entries:
