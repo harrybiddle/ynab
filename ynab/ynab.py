@@ -42,7 +42,7 @@ def fetch_secrets_and_construct_banks(configs, keyring_username):
         bank_type = config['type']
         class_ = config_schema.BANKS[bank_type]
         return fetch_secrets_and_construct_bank(class_, config, keyring_username)
-    return map(construct, configs)
+    return [construct(c) for c in configs]
 
 def get_argument_parser():
     parser = argparse.ArgumentParser(description=__doc__)
