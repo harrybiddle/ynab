@@ -133,7 +133,7 @@ class Natwest(Bank):
     def _initiate_download(self, driver):
         period = ui.Select(
             driver.find_element_by_name(DOWNLOAD_PERIOD_DROPDOWN))
-        period.select_by_visible_text('Last 1 month')
+        period.select_by_visible_text('Last 1 month (4 weeks)')
 
         format = ui.Select(
             driver.find_element_by_name(DOWNLOAD_FILE_TYPE_DROPDOWN))
