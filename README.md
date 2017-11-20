@@ -30,6 +30,7 @@ You will need to make sure that directory containing the binary (as displayed wi
 
 ```bash
 echo 'PATH=$PATH:~/Library/Python/2.7/bin/' >> ~/.bash_profile
+source ~/.bash_profile
 hash -r
 ```
 
