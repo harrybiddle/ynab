@@ -50,6 +50,8 @@ Configuration
          account: <My Account>
    keyring:
      username: ynab
+   sources:
+     - type: <see below...>
    ```
 
 2. Choose *one bank* from the below list, fill in any entries in angled brackets, and add it to `~/.ynab.conf`.
