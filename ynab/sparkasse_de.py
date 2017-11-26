@@ -176,3 +176,8 @@ class CsvCamtToYnabFormat(object):
         with open(input_filename, 'r') as i:
             with open(output_filename, 'w') as o:
                 self.convert_csv(i, o)
+
+if __name__ == '__main__':
+    import sys
+    input_filename, output_filename = sys.argv[1:3]
+    CsvCamtToYnabFormat().convert_csv_file(input_filename, output_filename)
