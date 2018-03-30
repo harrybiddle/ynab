@@ -2,17 +2,23 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3
+      - image: circleci/python:2
     steps:
       - checkout
       - run:
-          name: install flake8
+          name: install requirements
           command: |
-            python3 -m venv venv
+            python -m virtualenv venv
             . venv/bin/activate
-            pip install flake8
+            pip install -r requirements.txt flake8
+
       - run:
-          name: run flake8      
+          name: run flake8
           command: |
             . venv/bin/activate
             python -m flake8 --exclude venv
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            python setup.py test

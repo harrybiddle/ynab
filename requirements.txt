@@ -1,6 +1,5 @@
 selenium
 polling
-pep8
 schema
 pyyaml
 mock
