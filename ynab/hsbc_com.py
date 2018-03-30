@@ -2,6 +2,7 @@ import fileutils
 
 from bank import Bank
 
+
 class HSBC(Bank):
 
     full_name = 'HSBC'
@@ -56,7 +57,8 @@ class HSBC(Bank):
         driver.find_element_by_id('dapViewMoreDownload').click()
 
         # select ofx for download
-        driver.find_element_by_id('$group_gpib_acct_bijit_AccountFilterPayments_2_ofx').click()
+        id = '$group_gpib_acct_bijit_AccountFilterPayments_2_ofx'
+        driver.find_element_by_id(id).click()
 
         # TODO can't get download to kick off :(
         driver.find_element_by_class_name('btnSecondary').click()

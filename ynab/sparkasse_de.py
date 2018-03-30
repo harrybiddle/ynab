@@ -1,19 +1,20 @@
 from collections import OrderedDict
 from datetime import datetime
 import csv
-import locale
 import os.path
 import math
 
 from bank import Bank
 import fileutils
 
+
 class SparkasseHeidelberg(Bank):
     ''' TODO:
-     - Handle the case where there is already a .CSV file in the downloads directory
+     - Handle the case where there is already a .CSV file in the downloads
+       directory
      - Switch to writing OFX files as these are better-supported by YNAB
-     - Make the start date of the download configurable (and set in config!): at the moment
-       we use the website default
+     - Make the start date of the download configurable (and set in config!):
+       at the moment we use the website default
     '''
 
     full_name = 'SparkasseHeidelberg'
@@ -40,59 +41,53 @@ class SparkasseHeidelberg(Bank):
     def login(self, driver):
         driver.get('https://www.sparkasse-heidelberg.de/en/home.html')
 
-        login_label = self.unique(driver.find_elements_by_xpath('//label[starts-with(text(),"Login name")]'),
+        x = '//label[starts-with(text(),"Login name")]'
+        login_label = self.unique(driver.find_elements_by_xpath(x),
                                   failure_msg='Cannot locate login textbox')
         login_id = login_label.get_attribute('for')
 
         login = self.unique(driver.find_elements_by_id(login_id))
         login.send_keys(self.username)
 
-        pin = self.unique(driver.find_elements_by_xpath('//input[@type="password"]'))
+        x = '//input[@type="password"]'
+        pin = self.unique(driver.find_elements_by_xpath(x))
 
         pin.send_keys(self.secret('pin'))
 
-        submit = self.unique(driver.find_elements_by_xpath('//input[@type="submit"]'))
+        x = '//input[@type="submit"]'
+        submit = self.unique(driver.find_elements_by_xpath(x))
         submit.click()
 
     def assert_there_is_only_one_account(self, driver):
         # check there is only one table on the page
-        self.unique(driver.find_elements_by_xpath('//table[contains(@class, "table_widget_finanzstatus")]'))
+        x = '//table[contains(@class, "table_widget_finanzstatus")]'
+        self.unique(driver.find_elements_by_xpath(x))
 
         # count the rows in the table
-        rows = len(driver.find_elements_by_xpath('//table[contains(@class, "table_widget_finanzstatus")]/tbody/tr'))
-        assert rows == 4, 'Too many rows in finance status table. Do you have more than one account? This script only supports one account'
+        x = '//table[contains(@class, "table_widget_finanzstatus")]/tbody/tr'
+        rows = len(driver.find_elements_by_xpath(x))
+        assert rows == 4, ('Too many rows in finance status table. Do you '
+                           'have more than one account? This script only '
+                           'supports one account')
 
     def navigate_to_transactions_table(self, driver):
-        transactions = self.unique(driver.find_elements_by_xpath('//input[@title="Transaction search"]'))
+        x = '//input[@title="Transaction search"]'
+        transactions = self.unique(driver.find_elements_by_xpath(x))
         transactions.click()
 
-    # def set_start_date_back_by_thirty_dates(self, driver):
-    #     from datetime import datetime, timedelta
-
-    #     def substract_thirty_days(string):
-    #         FORMAT = '%d.%m.%Y'
-    #         as_date = datetime.strptime(string, FORMAT)
-    #         new_date = as_date - timedelta(days=30)
-    #         return new_date.strftime(FORMAT)
-
-    #     start, end = driver.find_elements_by_xpath('//div[@id="zeitraumKalender"]/input')
-    #     start_date = start.get_attribute('value')
-    #     new_date = substract_thirty_days(start_date)
-    #     start.send_keys(new_date)  # doesn't work - maybe have to update attribute value
-    #
-    #     update = driver.find_element_by_xpath('//input[@title="Update"]')
-    #     update.click()
-
     def initiate_download(self, driver):
-        export = self.unique(driver.find_elements_by_xpath('//span[@title="Export"]'))
+        x = '//span[@title="Export"]'
+        export = self.unique(driver.find_elements_by_xpath(x))
         export.click()
 
-        csv_camt = self.unique(driver.find_elements_by_xpath('//input[@value="CSV-CAMT-Format"]'))
+        x = '//input[@value="CSV-CAMT-Format"]'
+        csv_camt = self.unique(driver.find_elements_by_xpath(x))
         csv_camt.click()
 
     def locate_csv_and_transform_to_ynab_format(self, dir):
         csv_file = self.unique(fileutils.wait_for_file(dir, '.CSV'),
-                               failure_msg='Found multiple CSV files - expected only one')
+                               failure_msg=('Found multiple CSV files - '
+                                            'expected only one'))
 
         output_csv_file = '-ynab_friendly'.join(os.path.splitext(csv_file))
 
@@ -101,9 +96,9 @@ class SparkasseHeidelberg(Bank):
         return output_csv_file
 
 
-
 class CsvCamtToYnabFormat(object):
-    ''' Converts the CSV-CAMT format to one that is supported by YouNeedABudget.com
+    ''' Converts the CSV-CAMT format to one that is supported by
+    YouNeedABudget.com
     '''
 
     CAMT_SCHEMA = OrderedDict()
@@ -138,11 +133,12 @@ class CsvCamtToYnabFormat(object):
         input_csv = csv.reader(input_stream, delimiter=';')
         header = input_csv.next()
         cleaned_header = [h.strip('"') for h in header]
-        assert (header == self.CAMT_SCHEMA.keys())
+        assert (cleaned_header == self.CAMT_SCHEMA.keys())
 
         # write new output header
         output_csv = csv.writer(output_stream)
-        output_csv.writerow(['Date','Payee','Category','Memo','Outflow','Inflow'])
+        output_csv.writerow(['Date', 'Payee', 'Category',
+                             'Memo', 'Outflow', 'Inflow'])
 
         # transform each row of the input stream and write it
         for row in input_csv:
@@ -170,12 +166,14 @@ class CsvCamtToYnabFormat(object):
             new_date_string = date.strftime(self.DEFAULY_YNAB_DATE_FORMAT)
 
             # write values
-            output_csv.writerow([new_date_string, payee, category, memo, outflow_string, inflow_string])
+            output_csv.writerow([new_date_string, payee, category, memo,
+                                 outflow_string, inflow_string])
 
     def convert_csv_file(self, input_filename, output_filename):
         with open(input_filename, 'r') as i:
             with open(output_filename, 'w') as o:
                 self.convert_csv(i, o)
+
 
 if __name__ == '__main__':
     import sys

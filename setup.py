@@ -20,6 +20,7 @@ def test_suite():
     test_suite = test_loader.discover('tests', pattern='test*.py')
     return test_suite
 
+
 # Get the long description from the README file
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()

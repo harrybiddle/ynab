@@ -3,6 +3,7 @@ import fileutils
 
 from bank import Bank
 
+
 class Amex(Bank):
     full_name = 'American Express'
 
@@ -44,7 +45,8 @@ class Amex(Bank):
 
     def _navigate_to_downloads_page(self, driver):
         tab = driver.find_element_by_id('gb_myca_pc_statement')
-        export = driver.find_element_by_id('gb_myca_pc_statement_export_statement_data')
+        export = driver.find_element_by_id(('gb_myca_pc_statement_export_'
+                                            'statement_data'))
 
         action = selenium.webdriver.ActionChains(driver)
         action.move_to_element(tab)

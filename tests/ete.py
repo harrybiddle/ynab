@@ -5,10 +5,12 @@ from mock import MagicMock, patch
 
 from ynab import ynab
 
+
 class EndToEndTestBase(object):
 
     def setUp(self):
-        ynab.TEMPORARY_DIRECTORY = tempfile.gettempdir() # TODO reset this afterwards
+        # TODO reset this afterwards
+        ynab.TEMPORARY_DIRECTORY = tempfile.gettempdir()
 
     # these functions are intended to be defined by the derived class
     def source_configuration(self):
@@ -41,7 +43,8 @@ class EndToEndTestBase(object):
                 chrome_driver: the chrome_driver mock object
                 responses: a dict of arg -> responses, for example
                     {'id_of_page_title': 'Natwest'}
-                driver_method: the method to mock, for example 'find_element_by_id'
+                driver_method: the method to mock, for example
+                    'find_element_by_id'
         '''
         def mock_function(arg):
             r = MagicMock()
@@ -53,7 +56,8 @@ class EndToEndTestBase(object):
         fn = getattr(chrome_driver.return_value, driver_method, None)
         fn.side_effect = mock_function
 
-    # this is the test method: derived class should rename this 'test_<somthing>'
+    # this is the test method: derived class should rename this
+    # 'test_<somthing>'
     @patch('glob.glob')
     @patch('keyring.get_password')
     @patch('selenium.webdriver.support.ui.Select')

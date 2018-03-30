@@ -1,5 +1,6 @@
 import uuid
 
+
 class Bank(object):
     def __init__(self, secrets={}):
         self._uuid = str(uuid.uuid4())
@@ -26,7 +27,6 @@ class Bank(object):
         error_msg = ('Given secrets differ from expected. Received\n  {}\nbut '
                      'expected\n  {}').format(str(given), str(expected))
         assert set(expected) == set(given), error_msg
-
 
     def secret(self, name):
         ''' Return the value of the given secret, e.g.

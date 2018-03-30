@@ -1,1 +1,1 @@
-from ynab import main
+from ynab import main  # noqa

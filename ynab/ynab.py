@@ -2,7 +2,6 @@
 ''' Pull down and import transaction histories into ynab.
 '''
 
-from collections import OrderedDict
 import argparse
 import os
 import shutil
@@ -17,21 +16,26 @@ from youneedabudget_com import YNAB
 
 TEMPORARY_DIRECTORY = '~/Downloads'
 
+
 def chrome_driver(temp_download_dir):
     options = webdriver.chrome.options.Options()
     prefs = {'download.default_directory': temp_download_dir}
     options.add_experimental_option('prefs', prefs)
     return webdriver.Chrome(chrome_options=options)
 
+
 def copy_without_key(d, key_to_skip):
-    ''' Returns a copy of the dictionary d, except without one specified key '''
-    return {i:d[i] for i in d if i != key_to_skip}
+    ''' Returns a copy of the dictionary d, except without one specified key
+    '''
+    return {i: d[i] for i in d if i != key_to_skip}
+
 
 def fetch_secrets_and_construct_bank(class_, config, keyring_username):
     secrets_keys = config.get('secrets_keys', {})
     secrets = keyring_secrets.get_secrets(secrets_keys, keyring_username)
     config_without_secrets_keys = copy_without_key(config, 'secrets_keys')
     return class_(config_without_secrets_keys, secrets)
+
 
 def fetch_secrets_and_construct_banks(configs, keyring_username):
     ''' Takes a list of source configurations and constructs Banks objects
@@ -41,8 +45,10 @@ def fetch_secrets_and_construct_banks(configs, keyring_username):
     def construct(config):
         bank_type = config['type']
         class_ = config_schema.BANKS[bank_type]
-        return fetch_secrets_and_construct_bank(class_, config, keyring_username)
+        return fetch_secrets_and_construct_bank(class_, config,
+                                                keyring_username)
     return [construct(c) for c in configs]
+
 
 def get_argument_parser():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -51,13 +57,15 @@ def get_argument_parser():
                         help='defaults to ~/.ynab.conf')
     return parser
 
+
 def quit_driver_continue_on_exception(driver):
     try:
         driver.quit()
         return 0
-    except:
+    except Exception as e:
         sys.stderr.write(str(e) + '\n')
         return 1
+
 
 def main(argv=None):
     if argv is None:
@@ -70,36 +78,39 @@ def main(argv=None):
 
     # construct banks
     keyring_username = config['keyring']['username']
-    banks = fetch_secrets_and_construct_banks(config['sources'], keyring_username)
+    banks = fetch_secrets_and_construct_banks(config['sources'],
+                                              keyring_username)
 
     # construct ynab
-    ynab = fetch_secrets_and_construct_bank(YNAB, config['ynab'], keyring_username)
+    ynab = fetch_secrets_and_construct_bank(YNAB, config['ynab'],
+                                            keyring_username)
 
     # For now, only support one source and one target
     bank = banks[0]
 
-    print 'Starting chrome to do your bidding'
-    temp_download_dir = tempfile.mkdtemp(dir=os.path.expanduser(TEMPORARY_DIRECTORY))
+    p = os.path.expanduser(TEMPORARY_DIRECTORY)
+    temp_download_dir = tempfile.mkdtemp(dir=p)
     driver = chrome_driver(temp_download_dir)
     driver.implicitly_wait(10)
 
     try:
-        print 'Downloading transactions from ' + bank.full_name
+        print('Downloading transactions from ' + bank.full_name)
         path = bank.download_transactions(driver, temp_download_dir)
 
         driver.execute_script('window.open(\'about:blank\', \'_blank\');')
         driver.switch_to_window(driver.window_handles[1])
 
-        print 'Uploading transactions to ynab'
+        print('Uploading transactions to ynab')
         ynab.upload_transactions(bank, driver, [path])
     finally:
         ret_code = quit_driver_continue_on_exception(driver)
 
-        print 'Removing the remaints'
+        print('Removing the remaints')
         if os.path.exists(temp_download_dir):
             shutil.rmtree(temp_download_dir)
 
     return ret_code
+
 
 if __name__ == '__main__':
     main()

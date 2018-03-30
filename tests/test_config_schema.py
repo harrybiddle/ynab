@@ -5,6 +5,7 @@ import yaml
 
 from ynab import config_schema
 
+
 class TestConfig(unittest.TestCase):
     ''' Tests the parsing of configuration files '''
 

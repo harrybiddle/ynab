@@ -7,6 +7,7 @@ from bank import Bank
 
 CHALLENGE_DESCRIPTION_CLASS_NAME = 'inner'
 
+
 class Halifax(Bank):
     full_name = 'Halifax'
 
@@ -44,7 +45,7 @@ class Halifax(Bank):
         to_return = []
         for path in paths:
             new_path = '_fixed'.join(os.path.splitext(path))
-            print new_path
+            print(new_path)
             with open(new_path, 'w') as new_file, open(path) as file:
                 for count, line in enumerate(file):
                     if ((count + 1) % 4 == 0):
@@ -63,7 +64,8 @@ class Halifax(Bank):
         assert 'Halifax' in driver.title
 
     def _log_in(self, driver):
-        user_id = driver.find_element_by_name('frmLogin:strCustomerLogin_userID')
+        n = 'frmLogin:strCustomerLogin_userID'
+        user_id = driver.find_element_by_name(n)
         user_id.send_keys(self.username)
 
         password = driver.find_element_by_id('frmLogin:strCustomerLogin_pwd')
@@ -76,29 +78,41 @@ class Halifax(Bank):
         self._complete_challenge(driver)
 
     def _complete_challenge(self, driver):
-        # Please enter characters X, Y and Z from your memorable information then
-        # click the continue button.\nWe will never ask you to enter your FULL
-        # memorable information.\nThis sign in step improves your security.
-        description = driver.find_element_by_class_name(CHALLENGE_DESCRIPTION_CLASS_NAME).text
+        # Please enter characters X, Y and Z from your memorable information
+        # then click the continue button.\nWe will never ask you to enter your
+        # FULL memorable information.\nThis sign in step improves your
+        # security.
+        description = driver.find_element_by_class_name(CHALLENGE_DESCRIPTION_CLASS_NAME).text  # noqa
 
         description = description[:34]
-        match = re.match('Please enter characters ([1-8]), ([1-8]) and ([1-8])', description)
+        match = re.match(('Please enter characters ([1-8]), ([1-8]) '
+                          'and ([1-8])'), description)
 
-        indexes = [int(match.group(1)) - 1, int(match.group(2)) - 1, int(match.group(3)) - 1]
+        indexes = [int(match.group(1)) - 1,
+                   int(match.group(2)) - 1,
+                   int(match.group(3)) - 1]
         chars = ''.join(map(self.secret('challenge').__getitem__, indexes))
 
+        m1 = ('frmentermemorableinformation1:strEnterMemorableInformation_'
+              'memInfo1')
+        m2 = ('frmentermemorableinformation1:strEnterMemorableInformation_'
+              'memInfo2')
+        m3 = ('frmentermemorableinformation1:strEnterMemorableInformation_'
+              'memInfo3')
         challenge_selectors = [
-            driver.find_element_by_name('frmentermemorableinformation1:strEnterMemorableInformation_memInfo1'),
-            driver.find_element_by_name('frmentermemorableinformation1:strEnterMemorableInformation_memInfo2'),
-            driver.find_element_by_name('frmentermemorableinformation1:strEnterMemorableInformation_memInfo3')]
+            driver.find_element_by_name(m1),
+            driver.find_element_by_name(m2),
+            driver.find_element_by_name(m3)]
 
         for char, selector in zip(chars, challenge_selectors):
             selector.send_keys(char)
 
-        driver.find_element_by_id('frmentermemorableinformation1:btnContinue').click()
+        id = 'frmentermemorableinformation1:btnContinue'
+        driver.find_element_by_id(id).click()
 
     def _navigate_to_downloads_page(self, driver):
-        driver.find_element_by_id('lnkAccFuncs_viewStatement_des-m-sat-xx-1').click()
+        driver.find_element_by_id('lnkAccFuncs_viewStatement_des-m-sat-xx-1') \
+              .click()
 
     def _initiate_download(self, driver):
         self._get_earlier_page(driver)
@@ -117,5 +131,6 @@ class Halifax(Bank):
         # select download mechanic
         driver.find_element_by_id('export-format').send_keys('p')
 
-        driver.find_element_by_id('creditcardstatment:ccstmt:export-statement-form:btnExport').click()
+        id = 'creditcardstatment:ccstmt:export-statement-form:btnExport'
+        driver.find_element_by_id(id).click()
         driver.find_element_by_class_name('overlay-close').click()

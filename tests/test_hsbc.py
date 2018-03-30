@@ -6,6 +6,7 @@ _USERNAME = 'username'
 _MEMORABLE_QUESTION = 'linguine'
 _SECURITY_CODE = '1234'
 
+
 class EndToEndTest(EndToEndTestBase, unittest.TestCase):
     ''' Runs the entire script through end to end, mocking out selenium, user
     input, and a bit of the file system '''
@@ -25,6 +26,7 @@ class EndToEndTest(EndToEndTestBase, unittest.TestCase):
         chrome_driver.return_value.title = 'HSBC'
 
     test_ete = EndToEndTestBase.ete
+
 
 if __name__ == '__main__':
     unittest.main()

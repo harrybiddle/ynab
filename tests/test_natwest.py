@@ -7,6 +7,7 @@ _ID = '1234768965'
 _PIN = '9750'
 _PASSWORD = 'mycrazyp!asswithatleasttencharacters'
 
+
 class TestSelectCharacters(unittest.TestCase):
     def test_happy_path(self):
         pin_digits = ['Enter the 4th number',
@@ -23,11 +24,12 @@ class TestSelectCharacters(unittest.TestCase):
         self.assertEqual(a, _PIN[3] + _PIN[1] + _PIN[2])
         self.assertEqual(b, _PASSWORD[4] + _PASSWORD[6] + _PASSWORD[9])
 
+
 class EndToEndTest(EndToEndTestBase, unittest.TestCase):
     ''' Runs the entire script through end to end, mocking out selenium, user
     input, and a bit of the file system '''
     def source_configuration(self):
-     return {
+        return {
             'type': 'natwest',
             'customer_number': '12345678',
             'secrets_keys': {
@@ -51,6 +53,7 @@ class EndToEndTest(EndToEndTestBase, unittest.TestCase):
                                 responses)
 
     test_ete = EndToEndTestBase.ete
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -2,17 +2,16 @@ from schema import Schema, And, Or, Optional
 import yaml
 
 from amex_com import Amex
-from bank import Bank
 from halifax_com import Halifax
 from hsbc_com import HSBC
 from natwest_com import Natwest
 from sparkasse_de import SparkasseHeidelberg
 
 BANKS = {'amex': Amex,
-          'halifax': Halifax,
-          'hsbc': HSBC,
-          'natwest': Natwest,
-          'sparkasse-heidelberg': SparkasseHeidelberg}
+         'halifax': Halifax,
+         'hsbc': HSBC,
+         'natwest': Natwest,
+         'sparkasse-heidelberg': SparkasseHeidelberg}
 
 _SOURCE_SCHEMA = {'type': Or(*BANKS.keys()),
                   Optional('secrets_keys'): {str: str},
@@ -28,10 +27,12 @@ _CONFIG_SCHEMA = Schema({'sources': [_SOURCE_SCHEMA],
                          'ynab': _YNAB_SCHEMA,
                          'keyring': _KEYRING_SCHEMA})
 
+
 def parse_config(config):
     ''' Raises: SchemaError if the supplied configuration is invalid
     '''
     return _CONFIG_SCHEMA.validate(config)
+
 
 def load_config(config_file):
     with open(config_file) as conf:

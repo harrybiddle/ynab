@@ -3,6 +3,7 @@ import unittest
 
 from ynab import bank
 
+
 class TestUUIDs(unittest.TestCase):
     def test_construction_with_uuid(self):
         b = bank.Bank()
@@ -12,10 +13,6 @@ class TestUUIDs(unittest.TestCase):
         banks = [bank.Bank() for i in range(100)]
         uuids = [b.uuid() for b in banks]
         self.assertEqual(len(uuids), len(set(uuids)))
-
-    def test_uuid_doesnt_change(self):
-        b = bank.Bank()
-        self.assertEqual(b.uuid(), b.uuid())
 
     def test_uuid_doesnt_change(self):
         b = bank.Bank()
@@ -32,6 +29,7 @@ class TestUUIDs(unittest.TestCase):
         b = bank.Bank()
         self.assertEqual(hash(a), hash(a))
         self.assertNotEqual(hash(a), hash(b))
+
 
 class TestSecrets(unittest.TestCase):
     def setUp(self):
@@ -56,6 +54,7 @@ class TestSecrets(unittest.TestCase):
     def test_secret_lookup_failure(self):
         with self.assertRaises(KeyError):
             self.bank.secret('foo')
+
 
 if __name__ == '__main__':
     unittest.main()

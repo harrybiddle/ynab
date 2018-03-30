@@ -1,4 +1,3 @@
-import os
 import unittest
 from collections import defaultdict
 
@@ -25,11 +24,13 @@ SECRETS = {
     SECRET_NAME2: SECRET_VALUE2
 }
 
+
 def Any(cls):
     class Any(cls):
         def __eq__(self, other):
             return True
     return Any()
+
 
 def mock_keyring_get_password(service_name, username):
     ''' A mock for keyring.get_password '''
@@ -37,6 +38,7 @@ def mock_keyring_get_password(service_name, username):
                        (SECRET_KEY2, USERNAME): SECRET_VALUE2}
     d = defaultdict(None, expected_values)
     return d[(service_name, username)]
+
 
 def concatd(*args):
     ''' Concatenates dictionaries together '''
@@ -67,11 +69,13 @@ class TestGetSecretsFromKeyring(unittest.TestCase):
         secrets = self.call_get_secrets_from_keyring(SECRETS_KEYS_CONFIG)
         self.assertEqual(SECRETS, secrets)
 
+
 class TestFetchSecretsAndConstructBanks(unittest.TestCase):
     ''' Tests the part of the code that constructs Bank objects from config '''
 
     def setUp(self):
         self.bank_init = bank_init = MagicMock()
+
         class BankMock(object):
             def __init__(self, *args, **kwargs):
                 bank_init(*args, **kwargs)
@@ -105,6 +109,7 @@ class TestFetchSecretsAndConstructBanks(unittest.TestCase):
 
         self.call_fetch_secrets_and_construct_bank(config)
         self.assert_bank_init_with_args(self.bank_config, {})
+
 
 if __name__ == '__main__':
     unittest.main()

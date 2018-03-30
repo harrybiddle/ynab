@@ -10,6 +10,7 @@ from bank import Bank
 
 _WAIT_TIME_FOR_SUCCESSFUL_UPLOAD_SECONDS = 10
 
+
 class YNAB(Bank):
 
     full_name = 'YNAB'
@@ -41,9 +42,8 @@ class YNAB(Bank):
         driver.find_element_by_xpath('//input[@placeholder="email address"]') \
               .send_keys(email)
 
-        p = driver.find_element_by_xpath('//input[@placeholder="password"]') \
-                  .send_keys(self.secret('password') + Keys.RETURN)
-
+        driver.find_element_by_xpath('//input[@placeholder="password"]') \
+              .send_keys(self.secret('password') + Keys.RETURN)
 
     def _navigate_to_upload_screen(self, driver, budget, account):
         # choose budget dropdown
@@ -55,8 +55,9 @@ class YNAB(Bank):
         driver.find_element_by_xpath(open_budget).click()
 
         # find our chosen budget text
-        chosen_budget = ('//button[text()="{}"'
-                         ' and contains(@class,"select-budget")]').format(budget)
+        chosen_budget = (('//button[text()="{}"'
+                         ' and contains(@class,"select-budget")]')
+                         .format(budget))
         element = driver.find_element_by_xpath(chosen_budget)
 
         # get the URL for the budget from the parent and visit it
@@ -67,12 +68,12 @@ class YNAB(Bank):
         driver.get(url)
 
         # choosen the right account
-        driver.find_element_by_xpath('//span[text()="{}"]'.format(account)).click()
+        driver.find_element_by_xpath('//span[text()="{}"]'.format(account)) \
+              .click()
 
         # click the import transactions button
         x = '//*[contains(@class,"accounts-toolbar-file-import-transactions")]'
         driver.find_element_by_xpath(x).click()
-
 
     def _initiate_upload(self, driver, path):
         driver.find_element_by_xpath('//input[@type="file"]') \
@@ -81,7 +82,6 @@ class YNAB(Bank):
         x = '//button[text()="Import" and contains(@class,"button-primary")]'
         driver.find_element_by_xpath(x) \
               .click()
-
 
     def _wait_until_upload_confirmed_successful(self, driver):
         wait = WebDriverWait(driver, _WAIT_TIME_FOR_SUCCESSFUL_UPLOAD_SECONDS)

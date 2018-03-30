@@ -1,5 +1,6 @@
 import keyring
 
+
 def get_secrets(secret_names_and_keys, username):
     ''' Performs a lookup in the system keyring for the given secret(s).
 

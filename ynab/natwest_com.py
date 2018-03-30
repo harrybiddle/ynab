@@ -45,6 +45,7 @@ DOWNLOAD_FILE_TYPE_DROPDOWN = 'ctl00$mainContent$SS6SDDDA'
 NEXT_BUTTON = 'ctl00$mainContent$FinishButton_button'
 DOWNLOAD_BUTTON = 'ctl00$mainContent$SS7-LWLA_button_button'
 
+
 class Natwest(Bank):
 
     full_name = 'Natwest'
@@ -85,7 +86,8 @@ class Natwest(Bank):
         password_chars = map(extract_int_minus_one,
                              texts_requesting_password_chars)
         return (''.join(map(self.secret('pin').__getitem__, pin_digits)),
-                ''.join(map(self.secret('password').__getitem__, password_chars)))
+                ''.join(map(self.secret('password').__getitem__,
+                            password_chars)))
 
     def _log_in_pin_and_password(self, driver):
         # get the text asking for the pin digits and password chars
