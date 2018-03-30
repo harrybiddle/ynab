@@ -102,3 +102,6 @@ Pipfile.lock
 
 # emacs temp files
 *~
+
+# PyCharm
+.idea/
