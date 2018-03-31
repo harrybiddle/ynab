@@ -17,10 +17,13 @@ from youneedabudget_com import YNAB
 TEMPORARY_DIRECTORY = '~/Downloads'
 
 
-def chrome_driver(temp_download_dir):
+def chrome_driver(temp_download_dir, headless=False):
     options = webdriver.chrome.options.Options()
     prefs = {'download.default_directory': temp_download_dir}
     options.add_experimental_option('prefs', prefs)
+    if headless:
+        options.add_argument('--headless')
+        options.add_argument('--disable-gpu')
     return webdriver.Chrome(chrome_options=options)
 
 
@@ -55,6 +58,8 @@ def get_argument_parser():
     parser.add_argument('configuration_file', type=str,
                         default=os.path.expanduser('~/.ynab.conf'), nargs='?',
                         help='defaults to ~/.ynab.conf')
+    parser.add_argument('--headless', action='store_true',
+                        help='Do not open a visible browser window')
     return parser
 
 
@@ -90,7 +95,7 @@ def main(argv=None):
 
     p = os.path.expanduser(TEMPORARY_DIRECTORY)
     temp_download_dir = tempfile.mkdtemp(dir=p)
-    driver = chrome_driver(temp_download_dir)
+    driver = chrome_driver(temp_download_dir, args.headless)
     driver.implicitly_wait(10)
 
     try:
