@@ -5,14 +5,15 @@ import yaml
 
 from ynab import config_schema
 
+_SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+PATH_TO_TEST_CONFIG = os.path.join(_SCRIPT_DIR, 'ynab.conf')
+
 
 class TestConfig(unittest.TestCase):
     ''' Tests the parsing of configuration files '''
 
     def test_parse_example_config(self):
-        script_dir = os.path.dirname(os.path.realpath(__file__))
-        example_config_file = os.path.join(script_dir, 'ynab.conf')
-        with open(example_config_file) as f:
+        with open(PATH_TO_TEST_CONFIG) as f:
             as_yaml = yaml.load(f)
         validated_yaml = config_schema.parse_config(as_yaml)
         self.assertEqual(as_yaml, validated_yaml)

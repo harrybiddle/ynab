@@ -90,6 +90,10 @@ def main(argv=None):
     ynab = fetch_secrets_and_construct_bank(YNAB, config['ynab'],
                                             keyring_username)
 
+    # exit if no banks
+    if not banks:
+        return
+
     # For now, only support one source and one target
     bank = banks[0]
 

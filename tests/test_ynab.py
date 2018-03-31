@@ -1,8 +1,12 @@
 import unittest
 from collections import defaultdict
+from tempfile import NamedTemporaryFile
 
+import yaml
 from mock import patch, MagicMock
+from schema import SchemaError
 
+from tests.test_config_schema import PATH_TO_TEST_CONFIG
 from ynab import ynab
 from ynab import keyring_secrets
 
@@ -109,6 +113,35 @@ class TestFetchSecretsAndConstructBanks(unittest.TestCase):
 
         self.call_fetch_secrets_and_construct_bank(config)
         self.assert_bank_init_with_args(self.bank_config, {})
+
+
+class MockSchemaError(SchemaError):
+    def __init__(self):
+        SchemaError.__init__(self, None)
+
+
+class TestMain(unittest.TestCase):
+
+    @staticmethod
+    def _run_main_with_no_banks(extra_config={}):
+        with open(PATH_TO_TEST_CONFIG) as f:
+            no_bank_config = yaml.load(f)
+        no_bank_config['sources'] = []
+        no_bank_config.update(extra_config)
+
+        with NamedTemporaryFile('w') as f:
+            yaml.dump(no_bank_config, stream=f)
+            f.flush()
+            with patch('keyring.get_password'):
+                ynab.main([f.name])
+
+    def test_no_banks_is_a_no_op(self):
+        self._run_main_with_no_banks()
+
+    @patch('ynab.config_schema.parse_config', side_effect=MockSchemaError)
+    def test_schema_error_aborts_main(self, _):
+        with self.assertRaises(SchemaError):
+            self._run_main_with_no_banks()
 
 
 if __name__ == '__main__':
