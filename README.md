@@ -130,6 +130,6 @@ python setup.py test
 To run a specific test suite:
 
 ```
-python setup.py test -s tests.test_ynab.TestLoggedDriver
+python setup.py test -s tests.test_ynab.TestMain
 ```
 
