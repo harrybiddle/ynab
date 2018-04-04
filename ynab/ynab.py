@@ -4,6 +4,7 @@
 
 import argparse
 import os
+import shutil
 import sys
 import tempfile
 from datetime import datetime
@@ -62,7 +63,7 @@ def take_screenshot(driver):
     filename = '{}.png'.format(basename)
     path = os.path.join(directory, filename)
     driver.get_screenshot_as_file(path)
-    print ('Screenshot saved as {}'.format(path))
+    print('Screenshot saved as {}'.format(path))
 
 
 def get_argument_parser():
