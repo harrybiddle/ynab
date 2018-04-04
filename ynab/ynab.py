@@ -7,8 +7,12 @@ import os
 import shutil
 import sys
 import tempfile
+from datetime import datetime
 
+from polling import TimeoutException
 from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
+
 import keyring_secrets
 import config_schema
 
@@ -53,6 +57,15 @@ def fetch_secrets_and_construct_banks(configs, keyring_username):
     return [construct(c) for c in configs]
 
 
+def take_screenshot(driver):
+    directory = tempfile.gettempdir()
+    basename = datetime.now().strftime('%d-%b-%y-%H:%m:%S')
+    filename = '{}.png'.format(basename)
+    path = os.path.join(directory, filename)
+    driver.get_screenshot_as_file(path)
+    print('Screenshot saved as {}'.format(path))
+
+
 def get_argument_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('configuration_file', type=str,
@@ -60,6 +73,8 @@ def get_argument_parser():
                         help='defaults to ~/.ynab.conf')
     parser.add_argument('--headless', action='store_true',
                         help='Do not open a visible browser window')
+    parser.add_argument('--screenshot', action='store_true',
+                        help='Save screenshots on failure')
     return parser
 
 
@@ -111,6 +126,10 @@ def main(argv=None):
 
         print('Uploading transactions to ynab')
         ynab.upload_transactions(bank, driver, [path])
+    except (TimeoutException, WebDriverException):
+        if args.screenshot:
+            take_screenshot(driver)
+        raise
     finally:
         ret_code = quit_driver_continue_on_exception(driver)
 
