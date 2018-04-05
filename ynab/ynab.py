@@ -21,6 +21,17 @@ from youneedabudget_com import YNAB
 TEMPORARY_DIRECTORY = '~/Downloads'
 
 
+def enable_download_in_headless_chrome(driver, download_dir):
+    ''' Workaround for a bug in Chromium. See comment #86 of the below link:
+    https://bugs.chromium.org/p/chromium/issues/detail?id=696481
+    '''
+    driver.command_executor._commands['send_command'] = \
+        ('POST', '/session/$sessionId/chromium/send_command') # noqa
+    params = {'cmd': 'Page.setDownloadBehavior',
+              'params': {'behavior': 'allow', 'downloadPath': download_dir}}
+    driver.execute('send_command', params)
+
+
 def chrome_driver(temp_download_dir, headless=False):
     options = webdriver.chrome.options.Options()
     prefs = {'download.default_directory': temp_download_dir}
@@ -28,7 +39,9 @@ def chrome_driver(temp_download_dir, headless=False):
     if headless:
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
-    return webdriver.Chrome(chrome_options=options)
+    driver = webdriver.Chrome(chrome_options=options)
+    enable_download_in_headless_chrome(driver, temp_download_dir)
+    return driver
 
 
 def copy_without_key(d, key_to_skip):
