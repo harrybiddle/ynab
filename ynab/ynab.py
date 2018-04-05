@@ -26,7 +26,7 @@ def enable_download_in_headless_chrome(driver, download_dir):
     https://bugs.chromium.org/p/chromium/issues/detail?id=696481
     '''
     driver.command_executor._commands['send_command'] = \
-        ('POST', '/session/$sessionId/chromium/send_command') # noqa
+        ('POST', '/session/$sessionId/chromium/send_command')  # noqa
     params = {'cmd': 'Page.setDownloadBehavior',
               'params': {'behavior': 'allow', 'downloadPath': download_dir}}
     driver.execute('send_command', params)
