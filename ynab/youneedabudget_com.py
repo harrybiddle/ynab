@@ -2,6 +2,7 @@ import os
 import time
 
 from selenium.webdriver.common.by import By
+import selenium.webdriver.support.expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as conditions
 from selenium.webdriver.common.keys import Keys
@@ -9,6 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from bank import Bank
 
 _WAIT_TIME_FOR_SUCCESSFUL_UPLOAD_SECONDS = 10
+_WAIT_FOR_IMPORT_READY_SECONDS = 5
 
 
 class YNAB(Bank):
@@ -79,9 +81,11 @@ class YNAB(Bank):
         driver.find_element_by_xpath('//input[@type="file"]') \
               .send_keys(os.path.expanduser(path))
 
-        x = '//button[text()="Import" and contains(@class,"button-primary")]'
-        driver.find_element_by_xpath(x) \
-              .click()
+        import_button = (By.XPATH, ('//button[text()="Import" and '
+                                    'contains(@class,"button-primary")]'))
+        wait = WebDriverWait(driver, _WAIT_FOR_IMPORT_READY_SECONDS)
+        wait.until(ec.element_to_be_clickable(import_button)) \
+            .click()
 
     def _wait_until_upload_confirmed_successful(self, driver):
         wait = WebDriverWait(driver, _WAIT_TIME_FOR_SUCCESSFUL_UPLOAD_SECONDS)

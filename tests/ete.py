@@ -27,6 +27,9 @@ class EndToEndTestBase(object):
     def mock_select(self, select):
         pass
 
+    def mock_clickable(self, clickable):
+        clickable.return_value(lambda x: x)
+
     def mock_get_password(self, get_password):
         get_password.return_value = 'password'
 
@@ -60,14 +63,17 @@ class EndToEndTestBase(object):
     # 'test_<somthing>'
     @patch('glob.glob')
     @patch('keyring.get_password')
+    @patch('selenium.webdriver.support.expected_conditions.element_to_be_clickable')  # noqa
     @patch('selenium.webdriver.support.ui.Select')
     @patch('selenium.webdriver.ActionChains')
     @patch('selenium.webdriver.Chrome')
-    def ete(self, chrome_driver, action_chains, select, get_password, glob):
+    def ete(self, chrome_driver, action_chains, select, clickable,
+            get_password, glob):
         # provide opportunity to configure mocks
         self.mock_chrome_driver(chrome_driver)
         self.mock_action_chains(action_chains)
         self.mock_select(select)
+        self.mock_clickable(clickable)
         self.mock_get_password(get_password)
         self.mock_glob(glob)
 
