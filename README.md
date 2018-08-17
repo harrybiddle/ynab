@@ -104,6 +104,15 @@ Configuration
          secrets_keys:
            pin: sparkasse_pin
      ```
+     
+   - DKB:
+     ```yml
+     sources:
+       - type: dkb
+         secrets_keys:
+           anmeldename: dkb_anmeldename
+           pin: dkb_pin
+     ```     
 
 1. Open your keyring backend---on a Mac, this will be the KeyChain app--and create one entry for each secret for your bank and one for your YNAB password with the account 'ynab'.
 
