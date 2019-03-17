@@ -15,6 +15,8 @@ Requirements:
 1. [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/). For a Mac with [Homebrew](https://brew.sh), this can be done with `brew install chromedriver`.
 1. Python 3.7 and [poetry](https://poetry.eustace.io/)
 
+To install ynab run the following:
+
 ```bash
 rm -r dist/*
 poetry build --format sdist
