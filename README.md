@@ -1,5 +1,5 @@
-YNAB
-====
+Scraper for YouNeedABudget.com
+==============================
 
 Scrapes transactions from online banking portals and uploads them to YouNeedABudget.com.
 
