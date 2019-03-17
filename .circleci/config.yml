@@ -11,5 +11,15 @@ jobs:
           command: poetry run flake8
       - run:
           command: poetry run black --check .
+      - run:
+          name: Check versions in sync
+          command: |
+            toml_version=$(grep '^version = ' pyproject.toml | grep -Po '\d+')
+            ynab_version=$(grep -Po '\d+' ynab/__version__.py)
+            if ! [ "${toml_version}" == "${ynab_version}" ]; then
+              echo "Version mismatch"
+              echo "\tVersion in pyproject.toml     : ${toml_version}"
+              echo "\tVersion in ynab/__version__.py: ${ynab_version}"
+            fi
 #      - run:
 #          command: poetry run pytest

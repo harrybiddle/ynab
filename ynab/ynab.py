@@ -13,7 +13,7 @@ from polling import TimeoutException
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 
-from ynab import config_schema, keyring_secrets
+from ynab import __version__, config_schema, keyring_secrets
 from ynab.youneedabudget_com import YNAB
 
 TEMPORARY_DIRECTORY = "~/Downloads"
@@ -97,6 +97,7 @@ def get_argument_parser():
     parser.add_argument(
         "--screenshot", action="store_true", help="Save screenshots on failure"
     )
+    parser.add_argument("--version", action="store_true", help="Print version and exit")
     return parser
 
 
@@ -115,6 +116,10 @@ def main(argv=None):
 
     parser = get_argument_parser()
     args = parser.parse_args(argv)
+
+    if args.version:
+        print(__version__)
+        return
 
     config = config_schema.load_config(args.configuration_file)
 
