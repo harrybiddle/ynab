@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "ynab"
+version = "15"
+description = "Automate downloading and uploading transactions to YNAB"
+
+license = "MIT"
+
+authors = [
+    "Harry Biddle",
+    "John Boreiko"
+]
+
+readme = 'README.md'  # Markdown files are supported
+
+repository = "https://github.com/harrybiddle/ynab"
+homepage = "https://github.com/harrybiddle/ynab"
+
+keywords = ['ynab youneedabudget selenium']
+
+[tool.poetry.dependencies]
+python = "^3.7"  # Compatible python versions must be declared here
+toml = "^0.9"
+selenium = "*"
+polling = "*"
+schema = "*"
+pyyaml = "*"
+mock = "*"
+keyring = "*"
+
+[tool.poetry.dev-dependencies]
+black = { version = "^18.3-alpha.0", allows-prereleases = true }
+flake8 = "^3.7"
+flake8-isort = "^2.6"
+
+[tool.poetry.scripts]
+ynab = 'ynab.ynab:main'

@@ -1,6 +1,0 @@
-selenium
-polling
-schema
-pyyaml
-mock
-keyring

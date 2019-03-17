@@ -1,37 +1,24 @@
 YNAB
 ====
 
-Selenium automation to download transactions from online banking websites
-then upload them to YouNeedABudget.com.
+Scrapes transactions from online banking portals and uploads them to YouNeedABudget.com.
 
 Installation
 ------------
+
+The project isn't on PyPI
 
 Requirements:
 
 1. A supported backend for [keyring](https://pypi.python.org/pypi/keyring). The Mac Keychain or Windows Credential Manager will do.
 1. [Google Chrome](https://www.google.com/chrome).
 1. [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/). For a Mac with [Homebrew](https://brew.sh), this can be done with `brew install chromedriver`.
-1. Python 2.7.
-
-Optional:
-
-1. [pip](https://pip.pypa.io) for easy installation of the script.
-
-To install the script:
+1. Python 3.7 and [poetry](https://poetry.eustace.io/)
 
 ```bash
-pip install --user -r requirements.txt
-python setup.py bdist_wheel
-pip install --user dist/ynab*.whl
-```
-
-You will need to make sure that directory containing the binary (as displayed with `pip show -f ynab`) is on your `PATH`. For a Mac this can be done with
-
-```bash
-echo 'PATH=$PATH:~/Library/Python/2.7/bin/' >> ~/.bash_profile
-source ~/.bash_profile
-hash -r
+rm -r dist/*
+poetry build --format sdist
+pip3 install --user dist/*
 ```
 
 Configuration
@@ -104,7 +91,7 @@ Configuration
          secrets_keys:
            pin: sparkasse_pin
      ```
-     
+
    - DKB:
      ```yml
      sources:
@@ -112,7 +99,7 @@ Configuration
          secrets_keys:
            anmeldename: dkb_anmeldename
            pin: dkb_pin
-     ```     
+     ```
 
 1. Open your keyring backend---on a Mac, this will be the KeyChain app--and create one entry for each secret for your bank and one for your YNAB password with the account 'ynab'.
 
@@ -129,16 +116,22 @@ Simply run the command `ynab`.
 Development
 -----------
 
-To run tests:
+Dependencies are installed using poetry:
 
 ```bash
-pip install --user -r requirements.txt
-python setup.py test
+poetry install
 ```
 
-To run a specific test suite:
+To run tests:
 
 ```
-python setup.py test -s tests.test_ynab.TestMain
+poetry run tests
+```
+
+All files should be processed with [black](https://black.readthedocs.io/en/stable/) and [isort](https://github.com/timothycrosley/isort) before committing:
+
+```
+poetry run black
+poetry run isort -rc 
 ```
 
