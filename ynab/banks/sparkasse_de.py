@@ -137,7 +137,7 @@ class CsvCamtToYnabFormat(object):
         input_csv = csv.reader(input_stream, delimiter=";")
         header = next(input_csv)
         cleaned_header = [h.strip('"') for h in header]
-        assert cleaned_header == self.CAMT_SCHEMA.keys()
+        assert cleaned_header == list(self.CAMT_SCHEMA.keys())
 
         # write new output header
         output_csv = csv.writer(output_stream)

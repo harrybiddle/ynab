@@ -1,12 +1,12 @@
 import yaml
-from schema import And, Optional, Or, Schema
+from schema import Optional, Or, Schema
 
-from ynab.amex_com import Amex
-from ynab.dkb_de import DKB
-from ynab.halifax_com import Halifax
-from ynab.hsbc_com import HSBC
-from ynab.natwest_com import Natwest
-from ynab.sparkasse_de import SparkasseHeidelberg
+from .banks.amex_com import Amex
+from .banks.dkb_de import DKB
+from .banks.halifax_com import Halifax
+from .banks.hsbc_com import HSBC
+from .banks.natwest_com import Natwest
+from .banks.sparkasse_de import SparkasseHeidelberg
 
 BANKS = {
     "amex": Amex,
@@ -16,25 +16,16 @@ BANKS = {
     "sparkasse-heidelberg": SparkasseHeidelberg,
     "dkb": DKB,
 }
-
-_SOURCE_SCHEMA = {
+_BANK_SCHEMA = {
     "type": Or(*BANKS.keys()),
     Optional("secrets_keys"): {str: str},
+    "target": {"budget_id": str, "account_id": str},
     Optional(str): object,
 }
-_TARGET_SCHEMA = {
-    "budget": And(str, len),
-    "account": And(str, len),
-    Optional("id"): object,
-}
-_YNAB_SCHEMA = {
-    "email": And(str, len),
-    "targets": [_TARGET_SCHEMA],
-    "secrets_keys": {"password": str},
-}
+_YNAB_SCHEMA = {"secrets_keys": {"access_token": str}}
 _KEYRING_SCHEMA = {"username": str}
 _CONFIG_SCHEMA = Schema(
-    {"sources": [_SOURCE_SCHEMA], "ynab": _YNAB_SCHEMA, "keyring": _KEYRING_SCHEMA}
+    {"banks": [_BANK_SCHEMA], "ynab": _YNAB_SCHEMA, "keyring": _KEYRING_SCHEMA}
 )
 
 
@@ -46,5 +37,5 @@ def parse_config(config):
 
 def load_config(config_file):
     with open(config_file) as conf:
-        loaded_config = yaml.load(conf)
+        loaded_config = yaml.safe_load(conf)
     return parse_config(loaded_config)

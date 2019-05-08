@@ -105,3 +105,4 @@ Pipfile.lock
 
 # PyCharm
 .idea/
+pip-wheel-metadata/

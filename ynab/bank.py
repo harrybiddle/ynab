@@ -1,24 +1,15 @@
 import uuid
 
 
-class Bank(object):
-    def __init__(self, secrets={}):
-        self._uuid = str(uuid.uuid4())
-        self._secrets = secrets
+class ObjectWithSecrets:
+    def __init__(self, secrets, *args, **kwargs):
+        self._secrets = secrets or dict()
 
-    def __hash__(self):
-        return hash(self.uuid())
-
-    def __eq__(self, other):
-        return self.uuid() == other.uuid()
-
-    def __ne__(self, other):
-        return not (self == other)
-
-    def uuid(self):
-        """ Returns the unique UUID for this object, as a string
-        """
-        return self._uuid
+    @classmethod
+    def from_config(cls, config, keyring):
+        secrets_keys = config.pop("secrets_keys", {})
+        secrets = keyring.get_secrets(secrets_keys)
+        return cls(config, secrets)
 
     def validate_secrets(self, *expected):
         """ Raises an AssertionError if the list of secret names (given as
@@ -39,3 +30,23 @@ class Bank(object):
             KeyError if the secret doesn't exist
         """
         return self._secrets[name]
+
+
+class Bank(ObjectWithSecrets):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._uuid = str(uuid.uuid4())
+
+    def __hash__(self):
+        return hash(self.uuid())
+
+    def __eq__(self, other):
+        return self.uuid() == other.uuid()
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def uuid(self):
+        """ Returns the unique UUID for this object, as a string
+        """
+        return self._uuid

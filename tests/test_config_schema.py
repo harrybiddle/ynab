@@ -14,6 +14,6 @@ class TestConfig(unittest.TestCase):
 
     def test_parse_example_config(self):
         with open(PATH_TO_TEST_CONFIG) as f:
-            as_yaml = yaml.load(f)
+            as_yaml = yaml.safe_load(f)
         validated_yaml = config_schema.parse_config(as_yaml)
         self.assertEqual(as_yaml, validated_yaml)

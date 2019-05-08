@@ -1,0 +1,9 @@
+"Kontonummer:";"JJ17234567081991345666 / Girokonto";
+
+"Von:";"05.04.2019";
+"Bis:";"05.05.2019";
+"Kontostand vom 05.05.2019:";"1.234,56 EUR";
+
+"Buchungstag";"Wertstellung";"Buchungstext";"Auftraggeber / Beg�nstigter";"Verwendungszweck";"Kontonummer";"BLZ";"Betrag (EUR)";"Gl�ubiger-ID";"Mandatsreferenz";"Kundenreferenz";
+"06.05.2019";"";"KARTENZAHLUNG";"EC-POS EMV  0";"EUR       2820KURS         KURS VOM   .  .            K�ln       04.05.19 12.28IZ *Lorem Ipsum";"0000000000";"00000000";"-28,20";"";"";"";
+"02.05.2019";"02.05.2019";"DAUERAUFTRAG";"HOLGER POTTS";"Auftrag";"DU86765904003004251374";"MNHYFG66BGB";"-950,00";"";"";"";

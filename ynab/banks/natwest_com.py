@@ -81,9 +81,9 @@ class Natwest(Bank):
         """ Takes a list of phrases like "Enter the xth number" that are asking
         for a subset of the pin/password, and returns that subset."""
 
-        def extract_int_minus_one(unicode):
-            string = unicode.encode("ascii", "ignore")
-            return int(filter(str.isdigit, string)) - 1
+        def extract_int_minus_one(string):
+            digits = "".join([c for c in string if c.isdigit()])
+            return int(digits) - 1
 
         pin_digits = map(extract_int_minus_one, texts_requesting_pin_digits)
         password_chars = map(extract_int_minus_one, texts_requesting_password_chars)

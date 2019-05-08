@@ -1,5 +1,5 @@
-Scraper for YouNeedABudget.com
-==============================
+YNAB
+====
 
 Scrapes transactions from online banking portals and uploads them to YouNeedABudget.com.
 
@@ -27,71 +27,84 @@ Configuration
 -------------
 
 1. Create a file `~/.ynab.conf` with the following contents. Fill in any entries in angled brackets (`<`, `>`).
-   Don't fill in any of the `secrets_keys` entires, we'll put this in your keyring in the next step!
+   The `secrets_keys` entry should not contain any actual secrets, insert it as written:
 
    ```yml
    ynab:
-     email: <email@domain.com>
      secrets_keys:
-       password: ynab_password
-     targets:
-       - budget: <My Budget>
-         account: <My Account>
+       access_token: ynab_access_token
    keyring:
      username: ynab
-   sources:
-     - type: <see below...>
    ```
 
+1. [Head over to YouNeedABudget to generate a "personal access token"](https://api.youneedabudget.com/#authentication-overview).
+
+1. Find out the budget id and account id that you would like to upload transactions to by using their API.
+
 2. Choose *one bank* from the below list, fill in any entries in angled brackets, and add it to `~/.ynab.conf`.
-   Again, don't fill in any of the `secrets_keys` entires!
+   Values in `<..>` should be filled out but everything else, particularly the "secrets_keys" section, should be pasted in verbatim.
 
    - Amex:
      ```yml
      sources:
        - type: amex
-         username: <amex_username>
+         username: <your amex username>
          secrets_keys:
            password: amex_password
+         target:
+           budget_id: <your budget id>
+           account_id: <your account id>
      ```
 
    - Halifax:
      ```yml
      sources:
        - type: halifax
-         username: <halifax_username>
+         username: <your halifax username>
          secrets_keys:
            password: halifax_password
            challenge: halifax_challenge_password
+         target:
+           budget_id: <your budget id>
+           account_id: <your account id>
      ```
 
    - HSBC:
      ```yml
      sources:
        - type: hsbc
-         username: <hsbc_username>
+         username: <your hsbc username>
          secrets_keys:
            memorable_question: hsbc_memorable_question
            security_code: hsbc_security_code
+         target:
+           budget_id: <your budget id>
+           account_id: <your account id>
       ```
 
    - Natwest:
      ```yml
      sources:
        - type: natwest
-         customer_number: <natwest_customer_number>
+         customer_number: <your natwest customer number>
          secrets_keys:
            password: natwest_password
            pin: natwest_pin
+         target:
+           budget_id: <your budget id>
+           account_id: <your account id>
      ```
 
    - Sparkasse-Heidelberg:
      ```yml
      sources:
        - type: sparkasse-heidelberg
-         username: <sparkasse_username>
+         username: <your sparkasse username>
          secrets_keys:
            pin: sparkasse_pin
+         target:
+           budget_id: <your budget id>
+           account_id: <your account id>
      ```
 
    - DKB:
@@ -101,14 +114,16 @@ Configuration
          secrets_keys:
            anmeldename: dkb_anmeldename
            pin: dkb_pin
+         target:
+           budget_id: <your budget id>
+           account_id: <your account id>
      ```
 
-1. Open your keyring backend---on a Mac, this will be the KeyChain app--and create one entry for each secret for your bank and one for your YNAB password with the account 'ynab'.
+1. Open your keyring backend---on a Mac, this will be the KeyChain app--and create one entry for each secret for your bank and one for your access token.
+   For example, if you have chosen Amex you will put in two entries
 
-   For example, if you have chosen Amex you will put in two entries:
-
-   1. Keychain Item Name: `amex_password`, Account Name: `ynab`, Password: `<your amex password>`
-   1. Keychain Item Name: `ynab_password`, Account Name: `ynab`, Password: `<your ynab password>`
+   - Keychain Item Name: `amex_password`, Account Name: `ynab`, Password: `<your amex password>`
+   - Keychain Item Name: `ynab_access_token`, Account Name: `ynab`, Password: `<your ynab personal access token>`
 
 Usage
 -------------
@@ -127,13 +142,13 @@ poetry install
 To run tests:
 
 ```
-poetry run tests
+poetry run python -m unittest discover
 ```
 
 All files should be processed with [black](https://black.readthedocs.io/en/stable/) and [isort](https://github.com/timothycrosley/isort) before committing:
 
 ```
 poetry run black
-poetry run isort -rc 
+poetry run isort -rc
 ```
 

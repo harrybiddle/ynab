@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ynab"
-version = "15"
+version = "16"
 description = "Automate downloading and uploading transactions to YNAB"
 
 license = "MIT"
@@ -26,6 +26,7 @@ schema = "*"
 pyyaml = "*"
 mock = "*"
 keyring = "*"
+requests = "^2.21"
 
 [tool.poetry.dev-dependencies]
 black = { version = "^18.3-alpha.0", allows-prereleases = true }
@@ -33,4 +34,4 @@ flake8 = "^3.7"
 flake8-isort = "^2.6"
 
 [tool.poetry.scripts]
-ynab = 'ynab.ynab:main'
+ynab = 'ynab.main:main'
