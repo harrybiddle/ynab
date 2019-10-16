@@ -4,7 +4,12 @@ from csv import DictReader
 from datetime import datetime
 from pprint import pformat
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.expected_conditions import (
+    invisibility_of_element_located,
+)
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.wait import WebDriverWait
 
 from ynab import fileutils
 from ynab.api import YNAB
@@ -14,6 +19,7 @@ NUMBER_LINES_TO_IGNORE_IN_CSV = 6  # DKB CSV file is preceeded by a 6-line heade
 DATE_FORMAT_IN_CSV = "%d.%m.%Y"
 DKB_ENCODING = "iso-8859-1"
 DKB_CSV_DELIMITER = ";"
+DKB_2FA_TIMEOUT_SECONDS = 60
 
 ACCOUNT_DATE_HEADER_NAME = "Buchungstag"
 ACCOUNT_MEMO_HEADER_NAME = "Verwendungszweck"
@@ -33,6 +39,7 @@ class DKB(Bank):
 
     def fetch_transactions(self, driver, ynab: YNAB, dir: str):
         self._login(driver)
+        self._wait_for_2fa(driver)
         self._navigate_to_transactions(driver)
         self._switch_to_correct_account(driver)
         self._download_transactions(driver)
@@ -50,6 +57,19 @@ class DKB(Bank):
 
         button = driver.find_element_by_id("buttonlogin")
         button.click()
+
+    def _wait_for_2fa(self, driver):
+        # wait until we are on the 2fa page
+        xpath_of_some_2fa_page_element = (
+            "//*[text()[contains(.,'Anmeldung bestätigen')]]"
+        )
+        driver.find_element_by_xpath(xpath_of_some_2fa_page_element)
+
+        # wait until we are off the 2fa page
+        print(f"Waiting {DKB_2FA_TIMEOUT_SECONDS} seconds for 2FA...")
+        WebDriverWait(driver, DKB_2FA_TIMEOUT_SECONDS).until(
+            invisibility_of_element_located((By.XPATH, xpath_of_some_2fa_page_element))
+        )
 
     def _navigate_to_transactions(self, driver):
         transactions = driver.find_element_by_xpath('//*[@id="menu_0.0.0-node"]/a')
