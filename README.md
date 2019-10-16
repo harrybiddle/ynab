@@ -95,18 +95,6 @@ Configuration
            account_id: <your account id>
      ```
 
-   - Sparkasse-Heidelberg:
-     ```yml
-     sources:
-       - type: sparkasse-heidelberg
-         username: <your sparkasse username>
-         secrets_keys:
-           pin: sparkasse_pin
-         target:
-           budget_id: <your budget id>
-           account_id: <your account id>
-     ```
-
    - DKB:
      ```yml
      sources:

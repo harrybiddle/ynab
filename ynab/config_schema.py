@@ -6,16 +6,8 @@ from .banks.dkb_de import DKB
 from .banks.halifax_com import Halifax
 from .banks.hsbc_com import HSBC
 from .banks.natwest_com import Natwest
-from .banks.sparkasse_de import SparkasseHeidelberg
 
-BANKS = {
-    "amex": Amex,
-    "halifax": Halifax,
-    "hsbc": HSBC,
-    "natwest": Natwest,
-    "sparkasse-heidelberg": SparkasseHeidelberg,
-    "dkb": DKB,
-}
+BANKS = {"amex": Amex, "halifax": Halifax, "hsbc": HSBC, "natwest": Natwest, "dkb": DKB}
 _BANK_SCHEMA = {
     "type": Or(*BANKS.keys()),
     Optional("secrets_keys"): {str: str},
