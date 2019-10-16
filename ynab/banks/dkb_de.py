@@ -70,6 +70,7 @@ class DKB(Bank):
         WebDriverWait(driver, DKB_2FA_TIMEOUT_SECONDS).until(
             invisibility_of_element_located((By.XPATH, xpath_of_some_2fa_page_element))
         )
+        print("Looks like 2FA passed")
 
     def _navigate_to_transactions(self, driver):
         transactions = driver.find_element_by_xpath('//*[@id="menu_0.0.0-node"]/a')
