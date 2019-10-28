@@ -18,7 +18,7 @@ Requirements:
 To install ynab run the following:
 
 ```bash
-rm -r dist/*
+rm -rf dist/*
 poetry build --format sdist
 pip3 install --user dist/*
 ```

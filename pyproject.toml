@@ -18,7 +18,7 @@ homepage = "https://github.com/harrybiddle/ynab"
 keywords = ['ynab youneedabudget selenium']
 
 [tool.poetry.dependencies]
-python = "^3.7"  # Compatible python versions must be declared here
+python = "^3.6"  # Compatible python versions must be declared here
 toml = "^0.9"
 selenium = "*"
 polling = "*"
