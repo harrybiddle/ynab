@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ynab"
-version = "17"
+version = "18"
 description = "Automate downloading and uploading transactions to YNAB"
 
 license = "MIT"
