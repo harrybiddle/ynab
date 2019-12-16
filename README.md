@@ -135,6 +135,6 @@ All files should be processed with [black](https://black.readthedocs.io/en/stabl
 
 ```
 poetry run black
-poetry run isort -rc
+poetry run isort --recursive
 ```
 
