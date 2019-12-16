@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ynab"
-version = "17"
+version = "18"
 description = "Automate downloading and uploading transactions to YNAB"
 
 license = "MIT"
@@ -18,7 +18,7 @@ homepage = "https://github.com/harrybiddle/ynab"
 keywords = ['ynab youneedabudget selenium']
 
 [tool.poetry.dependencies]
-python = "^3.7"  # Compatible python versions must be declared here
+python = "^3.6"  # Compatible python versions must be declared here
 toml = "^0.9"
 selenium = "*"
 polling = "*"
@@ -29,7 +29,7 @@ keyring = "*"
 requests = "^2.21"
 
 [tool.poetry.dev-dependencies]
-black = { version = "^18.3-alpha.0", allows-prereleases = true }
+black = { version = "^19.10b0", allows-prereleases = true }
 flake8 = "^3.7"
 flake8-isort = "^2.6"
 

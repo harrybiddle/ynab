@@ -13,12 +13,10 @@ from pprint import pprint
 
 from selenium.common.exceptions import TimeoutException, WebDriverException
 
-from ynab import __version__
-
-from . import config_schema
-from .api import YNAB
-from .chrome import Chrome
-from .secrets import Keyring
+from ynab import __version__, config_schema
+from ynab.api import YNAB, TransactionStore  # norc
+from ynab.chrome import Chrome
+from ynab.secrets import Keyring
 
 TEMPORARY_DIRECTORY_PARENT = os.path.expanduser("~/Downloads")
 
@@ -57,13 +55,13 @@ def _construct_target(config, keyring):
 
 
 def _fetch_transactions_from_bank(
-    bank: Target, headless: bool, no_cleanup: bool, ynab: YNAB
+    bank: Target, headless: bool, no_cleanup: bool, transaction_store: TransactionStore,
 ):
     download_directory = tempfile.mkdtemp(dir=TEMPORARY_DIRECTORY_PARENT)
     driver = Chrome.construct(download_directory, headless)
 
     try:
-        bank.fetch_transactions(driver, ynab, download_directory)
+        bank.fetch_transactions(driver, transaction_store, download_directory)
     except (TimeoutException, WebDriverException) as e:
         sys.stderr.write(f"{e}\n")
         path = driver.take_screenshot()
@@ -93,10 +91,13 @@ def main(argv=None):
 
     for bank, budget_id, account_id in targets:
         print(f"Downloading transactions from {bank.full_name}")
-        ynab.set_default("account_id", account_id)
-        _fetch_transactions_from_bank(bank, args.headless, args.no_cleanup, ynab)
-        print(f"Pushing {ynab.count()} transactions to YNAB")
-        response = ynab.push(budget_id)
+        transaction_store = TransactionStore()
+        _fetch_transactions_from_bank(
+            bank, args.headless, args.no_cleanup, transaction_store
+        )
+
+        print(f"Pushing {transaction_store.count()} transactions to YNAB")
+        response = ynab.push(transaction_store, account_id, budget_id)
         if args.verbose:
             pprint(response.json())
 

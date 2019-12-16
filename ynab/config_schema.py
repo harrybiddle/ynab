@@ -1,11 +1,11 @@
 import yaml
 from schema import Optional, Or, Schema
 
-from .banks.amex_com import Amex
-from .banks.dkb_de import DKB
-from .banks.halifax_com import Halifax
-from .banks.hsbc_com import HSBC
-from .banks.natwest_com import Natwest
+from ynab.banks.amex_com import Amex
+from ynab.banks.dkb_de import DKB
+from ynab.banks.halifax_com import Halifax
+from ynab.banks.hsbc_com import HSBC
+from ynab.banks.natwest_com import Natwest
 
 BANKS = {"amex": Amex, "halifax": Halifax, "hsbc": HSBC, "natwest": Natwest, "dkb": DKB}
 _BANK_SCHEMA = {

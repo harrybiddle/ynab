@@ -12,7 +12,7 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
 from ynab import fileutils
-from ynab.api import YNAB
+from ynab.api import TransactionStore
 from ynab.bank import Bank
 
 NUMBER_LINES_TO_IGNORE_IN_CSV = 6  # DKB CSV file is preceeded by a 6-line header
@@ -37,14 +37,14 @@ class DKB(Bank):
         self.validate_secrets("anmeldename", "pin")
         self.account_substring = str(config["account_substring"])
 
-    def fetch_transactions(self, driver, ynab: YNAB, dir: str):
+    def fetch_transactions(self, driver, transaction_store: TransactionStore, dir: str):
         self._login(driver)
         self._wait_for_2fa(driver)
         self._navigate_to_transactions(driver)
         self._switch_to_correct_account(driver)
         self._download_transactions(driver)
-        csv, = fileutils.wait_for_file(dir, ".csv")
-        _add_transactions_from_csv(csv, ynab)
+        (csv,) = fileutils.wait_for_file(dir, ".csv")
+        _add_transactions_from_csv(csv, transaction_store)
 
     def _login(self, driver):
         driver.get("https://www.dkb.de/banking")
@@ -84,7 +84,7 @@ class DKB(Bank):
 
         all_texts = [option.text for option in all_accounts.options]
         try:
-            text, = [v for v in all_texts if self.account_substring in v]
+            (text,) = [v for v in all_texts if self.account_substring in v]
         except ValueError as e:
             raise ValueError("Account substring does not match or is not unique") from e
         all_accounts.select_by_visible_text(text)
@@ -97,7 +97,7 @@ class DKB(Bank):
         button.click()
 
 
-def _add_transactions_from_csv(filepath: str, ynab: YNAB):
+def _add_transactions_from_csv(filepath: str, transaction_store: TransactionStore):
     """
     Iterate over the entries in a CSV file from DKB and add them as transactions on the
     supplied YNAB object. Any entries with a date in the future are skipped.
@@ -135,7 +135,7 @@ def _add_transactions_from_csv(filepath: str, ynab: YNAB):
         # read the rest as CSV
         reader = DictReader(file, delimiter=DKB_CSV_DELIMITER)
         if has_payee:
-            payee_header, = [h for h in reader.fieldnames if PAYEE_HEADER_NAME in h]
+            (payee_header,) = [h for h in reader.fieldnames if PAYEE_HEADER_NAME in h]
 
         # insert into ynab object
         for row in reader:
@@ -149,6 +149,6 @@ def _add_transactions_from_csv(filepath: str, ynab: YNAB):
                 )
                 continue
 
-            ynab.add_transaction(
-                date=date, payee_name=payee_name, memo=memo, amount=float_amount
+            transaction_store.append(
+                date=date, payee_name=payee_name, memo=memo, amount=float_amount,
             )

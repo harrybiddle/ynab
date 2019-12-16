@@ -13,14 +13,12 @@ Requirements:
 1. A supported backend for [keyring](https://pypi.python.org/pypi/keyring). The Mac Keychain or Windows Credential Manager will do.
 1. [Google Chrome](https://www.google.com/chrome).
 1. [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/). For a Mac with [Homebrew](https://brew.sh), this can be done with `brew install chromedriver`.
-1. Python 3.7 and [poetry](https://poetry.eustace.io/)
+1. Python 3.7+, [pip](https://pip.pypa.io/en/stable/installing/), and [poetry](https://poetry.eustace.io/).
 
-To install ynab run the following:
+To install ynab you can use this script
 
 ```bash
-rm -r dist/*
-poetry build --format sdist
-pip3 install --user dist/*
+bash install.sh
 ```
 
 Configuration
@@ -137,6 +135,6 @@ All files should be processed with [black](https://black.readthedocs.io/en/stabl
 
 ```
 poetry run black
-poetry run isort -rc
+poetry run isort --recursive
 ```
 

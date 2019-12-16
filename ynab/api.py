@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import requests
 from requests import Response
 
-from .bank import ObjectWithSecrets
+from ynab.bank import ObjectWithSecrets
 
 DATE_FORMAT_FOR_YNAB = "%Y-%m-%d"
 CHARACTER_LIMIT_FOR_PAYEE_NAME = 50
@@ -23,16 +23,16 @@ class ImportIdGenerator:
     def generate(self, date: datetime, milliunit_amount: int) -> str:
         iso_date = date.strftime(DATE_FORMAT_FOR_YNAB)
         id_without_occurence = (
-            f"YNAB:{milliunit_amount}:{iso_date}"
-        )  # e.g. "YNAB:-294230:2015-12-30"
+            f"YNAB:{milliunit_amount}:{iso_date}"  # e.g. "YNAB:-294230:2015-12-30"
+        )
 
         self.counter.update([id_without_occurence])
         occurrence = self.counter[id_without_occurence]
         assert occurrence > 0
 
         return (
-            f"{id_without_occurence}:{occurrence}"
-        )  # e.g. "YNAB:-294230:2015-12-30:1"
+            f"{id_without_occurence}:{occurrence}"  # e.g. "YNAB:-294230:2015-12-30:1"
+        )
 
 
 class TransactionStore:
@@ -44,9 +44,7 @@ class TransactionStore:
         self.import_id_generator = ImportIdGenerator()
         self.transactions = []
 
-    def append(
-        self, account_id: str, date: datetime, payee_name: str, memo: str, amount: float
-    ):
+    def append(self, date: datetime, payee_name: str, memo: str, amount: float):
         """
         Parses an entry to be appropriate to send to YNAB and inserts in into an
         internal list
@@ -55,7 +53,6 @@ class TransactionStore:
         """
         milliunit_amount = int(round(amount, 3) * 1000)
         transaction = SimpleNamespace(
-            account_id=account_id,
             date=date.strftime(DATE_FORMAT_FOR_YNAB),
             payee_name=payee_name[:CHARACTER_LIMIT_FOR_PAYEE_NAME],
             memo=memo[-CHARACTER_LIMIT_FOR_MEMO:],
@@ -68,15 +65,14 @@ class TransactionStore:
             )
         self.transactions.append(transaction)
 
-    @property
-    def json(self):
+    def json(self, account_id: str):
         """
         All entries as a nested list/dictionary ready to be sent to the YNAB endpoint.
         """
         return {
             "transactions": [
                 {
-                    "account_id": t.account_id,
+                    "account_id": account_id,
                     "date": t.date,
                     "amount": t.milliunit_amount,
                     # "payee_id": None,
@@ -95,7 +91,7 @@ class TransactionStore:
     def clear(self):
         self.transactions = []
 
-    def __len__(self):
+    def count(self):
         return len(self.transactions)
 
 
@@ -103,21 +99,10 @@ class YNAB(ObjectWithSecrets):
     def __init__(self, _, secrets):
         super().__init__(secrets)
         self.validate_secrets("access_token")
-        self.transaction_store = TransactionStore()
-        self.defaults = {}
 
-    def add_transaction(self, **kwargs):
-        for key, value in self.defaults.items():
-            kwargs.setdefault(key, value)
-        self.transaction_store.append(**kwargs)
-
-    def set_default(self, key, value):
-        self.defaults[key] = value
-
-    def count(self):
-        return len(self.transaction_store)
-
-    def push(self, budget_id: str) -> Response:
+    def push(
+        self, transaction_store: TransactionStore, account_id: str, budget_id: str
+    ) -> Response:
         """
         Pushes all transactions to YNAB. After pushing all previously-added transactions
         are cleared.
@@ -128,7 +113,7 @@ class YNAB(ObjectWithSecrets):
         url = f"https://api.youneedabudget.com/v1/budgets/{budget_id}/transactions/bulk"
         access_token = self.secret("access_token")
         headers = {"Authorization": f"Bearer {access_token}"}
-        response = requests.post(url, json=self.transaction_store.json, headers=headers)
+        payload = transaction_store.json(account_id)
+        response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()
-        self.transaction_store.clear()
         return response
