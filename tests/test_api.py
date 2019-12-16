@@ -31,7 +31,6 @@ class TestApi(unittest.TestCase):
     def test_api(self):
         store = TransactionStore()
         store.append(
-            account_id="some-account-id",
             date=datetime(year=2018, month=4, day=13, hour=3, minute=44),
             payee_name="a very long payee name that will be longer than 50 characters",
             memo=(
@@ -41,7 +40,6 @@ class TestApi(unittest.TestCase):
             amount=12.3456,
         )
         store.append(
-            account_id="some-account-id",
             date=datetime(year=2018, month=4, day=13, hour=3, minute=44),
             payee_name="obama",
             memo="this memo is ok",
@@ -72,4 +70,4 @@ class TestApi(unittest.TestCase):
                 },
             ]
         }
-        self.assertEqual(expected, store.json)
+        self.assertEqual(expected, store.json("some-account-id"))

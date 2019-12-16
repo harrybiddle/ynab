@@ -1,1 +1,1 @@
-from .__version__ import __version__  # noqa
+from ynab.__version__ import __version__  # noqa
