@@ -13,10 +13,8 @@ from pprint import pprint
 
 from selenium.common.exceptions import TimeoutException, WebDriverException
 
-from ynab import __version__
-
-from ynab import config_schema
-from ynab.api import YNAB, TransactionStore
+from ynab import __version__, config_schema
+from ynab.api import YNAB, TransactionStore  # norc
 from ynab.chrome import Chrome
 from ynab.secrets import Keyring
 

@@ -12,7 +12,7 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
 from ynab import fileutils
-from ynab.api import YNAB, TransactionStore
+from ynab.api import TransactionStore
 from ynab.bank import Bank
 
 NUMBER_LINES_TO_IGNORE_IN_CSV = 6  # DKB CSV file is preceeded by a 6-line header
