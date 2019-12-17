@@ -27,6 +27,7 @@ pyyaml = "*"
 mock = "*"
 keyring = "*"
 requests = "^2.21"
+coverage = "^5.0"
 
 [tool.poetry.dev-dependencies]
 black = { version = "^19.10b0", allows-prereleases = true }

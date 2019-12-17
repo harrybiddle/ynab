@@ -6,7 +6,19 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Download Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - restore_cache:
+          keys:
+            - dependencies-v1-{{ checksum "poetry.lock" }}
+      - run:
           command: poetry install
+      - save_cache:
+          key: dependencies-v1-{{ checksum "poetry.lock" }}
+          paths:
+            - /home/circleci/.cache/pypoetry/virtualenvs
       - run:
           command: poetry run flake8
       - run:
@@ -21,5 +33,10 @@ jobs:
               echo "\tVersion in pyproject.toml     : ${toml_version}"
               echo "\tVersion in ynab/__version__.py: ${ynab_version}"
             fi
-#      - run:
-#          command: poetry run pytest
+      - run:
+          name: Run tests and upload coverage report
+          command: |
+            ./cc-test-reporter before-build
+            poetry run coverage run -m unittest discover
+            poetry run coverage xml
+            ./cc-test-reporter --coverage-input-type coverage.py after-build
