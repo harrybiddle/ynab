@@ -1,4 +1,5 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/fa519412528999781ee8/maintainability)](https://codeclimate.com/github/harrybiddle/ynab/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/fa519412528999781ee8/test_coverage)](https://codeclimate.com/github/harrybiddle/ynab/test_coverage)
 
 YNAB
 ====
