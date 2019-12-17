@@ -137,7 +137,7 @@ poetry run python -m unittest discover
 All files should be processed with [black](https://black.readthedocs.io/en/stable/) and [isort](https://github.com/timothycrosley/isort) before committing:
 
 ```
-poetry run black
+poetry run black .
 poetry run isort --recursive
 ```
 
