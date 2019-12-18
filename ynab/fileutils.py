@@ -3,7 +3,7 @@ import os.path
 
 from polling import poll
 
-_WAIT_FOR_FILE_DOWNLOAD_SECONDS = 10
+_WAIT_FOR_FILE_DOWNLOAD_SECONDS = 60
 _WAIT_FOR_FILE_DOWNLOAD_POLL_SECONDS = 1
 
 

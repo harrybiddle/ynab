@@ -7,7 +7,7 @@ class HSBC(Bank):
     full_name = "HSBC"
 
     def __init__(self, config, secrets):
-        super(HSBC, self).__init__(secrets)
+        super().__init__(secrets)
         self.validate_secrets("memorable_question", "security_code")
         self.username = config["username"]
 

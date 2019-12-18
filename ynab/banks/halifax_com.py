@@ -12,7 +12,7 @@ class Halifax(Bank):
     full_name = "Halifax"
 
     def __init__(self, config, secrets):
-        super(Halifax, self).__init__(secrets)
+        super().__init__(secrets)
         self.validate_secrets("password", "challenge")
         self.username = config["username"]
 

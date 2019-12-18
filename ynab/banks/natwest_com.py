@@ -51,7 +51,7 @@ class Natwest(Bank):
     full_name = "Natwest"
 
     def __init__(self, config, secrets):
-        super(Natwest, self).__init__(secrets)
+        super().__init__(secrets)
         self.validate_secrets("password", "pin")
         self.customer_number = config["customer_number"]
 

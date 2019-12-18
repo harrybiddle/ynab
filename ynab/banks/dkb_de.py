@@ -12,7 +12,7 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
 from ynab import fileutils
-from ynab.api import TransactionStore
+from ynab.api import BANK_DATE_RANGE, TransactionStore
 from ynab.bank import Bank
 
 NUMBER_LINES_TO_IGNORE_IN_CSV = 6  # DKB CSV file is preceeded by a 6-line header
@@ -30,10 +30,12 @@ PAYEE_HEADER_NAME = "Auftraggeber"
 
 
 class DKB(Bank):
+
     full_name = "DKB"
 
     def __init__(self, config, secrets):
-        super(DKB, self).__init__(secrets)
+        assert BANK_DATE_RANGE in [30, 60, 90], "Invalid date range"
+        super().__init__(secrets)
         self.validate_secrets("anmeldename", "pin")
         self.account_substring = str(config["account_substring"])
 
@@ -42,9 +44,17 @@ class DKB(Bank):
         self._wait_for_2fa(driver)
         self._navigate_to_transactions(driver)
         self._switch_to_correct_account(driver)
+        self._select_time_range(driver)
         self._download_transactions(driver)
         (csv,) = fileutils.wait_for_file(dir, ".csv")
         _add_transactions_from_csv(csv, transaction_store)
+
+    def _select_time_range(self, driver):
+        search_period = Select(driver.find_element_by_name("slSearchPeriod"))
+        search_period.select_by_visible_text(f"letzten {BANK_DATE_RANGE} Tage")
+
+        button = driver.find_element_by_id("searchbutton")
+        button.click()
 
     def _login(self, driver):
         driver.get("https://www.dkb.de/banking")
@@ -141,14 +151,17 @@ def _add_transactions_from_csv(filepath: str, transaction_store: TransactionStor
         for row in reader:
             payee_name = row[payee_header] if has_payee else ""
             float_amount = parse_german_float(row[AMOUNT_HEADER_NAME])
-            date = datetime.strptime(row[date_header_name], DATE_FORMAT_IN_CSV)
+            date = datetime.strptime(row[date_header_name], DATE_FORMAT_IN_CSV).date()
             memo = row[memo_header_name]
-            if date > datetime.now():
+            if date > date.today():
                 sys.stderr.write(
                     f"Skipping because it is in the future: \n{pformat(row)}\n"
                 )
                 continue
 
             transaction_store.append(
-                date=date, payee_name=payee_name, memo=memo, amount=float_amount,
+                transaction_date=date,
+                payee_name=payee_name,
+                memo=memo,
+                amount=float_amount,
             )

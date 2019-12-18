@@ -4,17 +4,26 @@ Pull down and import transaction histories into ynab.
 """
 
 import argparse
+import json
 import os
 import shutil
 import sys
 import tempfile
 from collections import namedtuple
+from datetime import date, timedelta
 from pprint import pprint
 
 from selenium.common.exceptions import TimeoutException, WebDriverException
 
 from ynab import __version__, config_schema
-from ynab.api import YNAB, TransactionStore  # norc
+from ynab.api import (  # norc
+    BANK_DATE_RANGE,
+    MAX_COMPARE_DAYS,
+    YNAB,
+    TransactionStore,
+    pretty_format_transactions,
+    transactions_difference,
+)
 from ynab.chrome import Chrome
 from ynab.secrets import Keyring
 
@@ -96,10 +105,37 @@ def main(argv=None):
             bank, args.headless, args.no_cleanup, transaction_store
         )
 
-        print(f"Pushing {transaction_store.count()} transactions to YNAB")
-        response = ynab.push(transaction_store, account_id, budget_id)
-        if args.verbose:
-            pprint(response.json())
+        if transaction_store.count() <= 0:
+            print("No transaction to push")
+        else:
+            print(f"Pushing {transaction_store.count()} transactions to YNAB")
+            response = ynab.push(transaction_store, account_id, budget_id)
+            if args.verbose:
+                pprint(response.json())
+
+            print(f"Checking for mismatches")
+            ynab_transaction_store = ynab.get(account_id, budget_id)
+            with open("/tmp/ynab.json", "w") as file:
+                json.dump(ynab_transaction_store.json(account_id), file)
+            only_on_ynab, only_in_bank = transactions_difference(
+                ynab_transaction_store.transactions, transaction_store.transactions
+            )
+
+            # ignore differences that are too old
+            cutoff_date = date.today() - timedelta(
+                days=BANK_DATE_RANGE - MAX_COMPARE_DAYS
+            )
+            only_on_ynab = [t for t in only_on_ynab if t.date > cutoff_date]
+            only_in_bank = [t for t in only_in_bank if t.date > cutoff_date]
+
+            # print any differences to the console
+            if only_on_ynab:
+                print("Extraneous in YNAB:")
+                print(pretty_format_transactions(only_on_ynab))
+
+            if only_in_bank:
+                print("Missing from YNAB:")
+                print(pretty_format_transactions(only_in_bank))
 
 
 if __name__ == "__main__":

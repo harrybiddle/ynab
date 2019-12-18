@@ -8,7 +8,7 @@ class Amex(Bank):
     full_name = "American Express"
 
     def __init__(self, config, secrets):
-        super(Amex, self).__init__(secrets)
+        super().__init__(secrets)
         self.validate_secrets("password")
         self.username = config["username"]
 
