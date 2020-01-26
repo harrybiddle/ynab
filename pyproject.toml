@@ -37,7 +37,7 @@ flake8 = "*"
 flake8-isort = "*"
 faker = "*"
 factory_boy = "*"
-importlib_resources = "^1.0.2"
+importlib_resources = "*"
 
 [tool.poetry.scripts]
 ynab = 'ynab.main:main'
