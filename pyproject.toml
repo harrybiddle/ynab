@@ -26,16 +26,17 @@ schema = "*"
 pyyaml = "*"
 mock = "*"
 keyring = "*"
-requests = "^2.21"
-coverage = "^5.0"
-fuzzywuzzy = "^0.17.0"
+requests = "*"
+coverage = "*"
+fuzzywuzzy = "*"
+xlrd = "*"
 
 [tool.poetry.dev-dependencies]
-black = { version = "^19.10b0", allows-prereleases = true }
-flake8 = "^3.7"
-flake8-isort = "^2.6"
-faker = "^3.0"
-factory_boy = "^2.12"
+black = { version = "*", allow-prereleases = true }
+flake8 = "*"
+flake8-isort = "*"
+faker = "*"
+factory_boy = "*"
 
 [tool.poetry.scripts]
 ynab = 'ynab.main:main'
