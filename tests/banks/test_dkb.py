@@ -5,13 +5,9 @@ from mock import MagicMock, call
 
 from importlib_resources import path
 from tests.banks import data
+from tests.utils import Any
 from ynab.api import TransactionStore
 from ynab.banks.dkb_de import _add_transactions_from_csv
-
-
-class Any:
-    def __eq__(self, other):
-        return True
 
 
 class TestAddTransactionsFromCSV(unittest.TestCase):

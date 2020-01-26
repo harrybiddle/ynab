@@ -106,3 +106,6 @@ Pipfile.lock
 # PyCharm
 .idea/
 pip-wheel-metadata/
+
+# Temporary files
+~$*.xlsx
