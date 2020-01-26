@@ -14,7 +14,9 @@ jobs:
           keys:
             - dependencies-v1-{{ checksum "poetry.lock" }}
       - run:
-          command: poetry install
+          command: |
+            pip install pip==20.0.2 poetry==1.0.2
+            poetry install
       - save_cache:
           key: dependencies-v1-{{ checksum "poetry.lock" }}
           paths:
