@@ -6,8 +6,16 @@ from ynab.banks.dkb_de import DKB
 from ynab.banks.halifax_com import Halifax
 from ynab.banks.hsbc_com import HSBC
 from ynab.banks.natwest_com import Natwest
+from ynab.banks.seb_se import SEB
 
-BANKS = {"amex": Amex, "halifax": Halifax, "hsbc": HSBC, "natwest": Natwest, "dkb": DKB}
+BANKS = {
+    "amex": Amex,
+    "halifax": Halifax,
+    "hsbc": HSBC,
+    "natwest": Natwest,
+    "dkb": DKB,
+    "seb": SEB,
+}
 _BANK_SCHEMA = {
     "type": Or(*BANKS.keys()),
     Optional("secrets_keys"): {str: str},

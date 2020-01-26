@@ -1,7 +1,9 @@
 from datetime import datetime
 
 import xlrd
+from ynab import fileutils
 from ynab.api import TransactionStore
+from ynab.bank import Bank
 
 
 class ExcelFile:
@@ -10,6 +12,33 @@ class ExcelFile:
     DATE_COLUMN = 1  # "Value Date"
     MEMO_COLUMN = 3  # "Text"
     AMOUNT_COLUMN = 4  # "Amount"
+
+
+class SEB(Bank):
+
+    full_name = "SEB"
+
+    def __init__(self, config, secrets):
+        super().__init__(secrets)
+        self.validate_secrets("personnummber", "pin")
+        self.account_substring = str(config["account_substring"])
+
+    def fetch_transactions(self, driver, transaction_store: TransactionStore, dir: str):
+        self._login(driver)
+        (csv,) = fileutils.wait_for_file(dir, ".xlsx")
+        _add_transactions_from_xlsx(csv, transaction_store)
+
+    def _login(self, driver):
+        driver.get("https://www.seb.se/banking")
+
+        login = driver.find_element_by_id("loginInputSelector")
+        login.send_keys(self.secret("anmeldename"))
+
+        pin = driver.find_element_by_id("pinInputSelector")
+        pin.send_keys(self.secret("pin"))
+
+        button = driver.find_element_by_id("buttonlogin")
+        button.click()
 
 
 def _add_transactions_from_xlsx(filepath: str, transaction_store: TransactionStore):
