@@ -1,20 +1,18 @@
 """
 Module for interacting with YouNeedABudget's API
 """
-from collections import Counter, namedtuple
+from collections import Counter
 from datetime import date, datetime, timedelta
-from typing import Iterable
 
-import fuzzywuzzy.process
 import requests
 from requests import Response
 
 from ynab.bank import ObjectWithSecrets
+from ynab.transactions import Transaction
 
 DATE_FORMAT_FOR_YNAB = "%Y-%m-%d"
 CHARACTER_LIMIT_FOR_PAYEE_NAME = 50
 CHARACTER_LIMIT_FOR_MEMO = 100
-MAX_COMPARE_DAYS = 7
 BANK_DATE_RANGE = 30
 
 
@@ -35,11 +33,6 @@ class ImportIdGenerator:
         return (
             f"{id_without_occurence}:{occurrence}"  # e.g. "YNAB:-294230:2015-12-30:1"
         )
-
-
-Transaction = namedtuple(
-    "Transaction", ["date", "payee_name", "memo", "milliunit_amount", "import_id"]
-)
 
 
 class TransactionStore:
@@ -157,77 +150,3 @@ class YNAB(ObjectWithSecrets):
     def _request_headers(self):
         access_token = self.secret("access_token")
         return {"Authorization": f"Bearer {access_token}"}
-
-
-def transactions_difference(
-    transactions_a: Iterable[Transaction], transactions_b: Iterable[Transaction]
-):
-    class Comparable:
-        def __init__(self, transaction):
-            self.transaction = transaction
-
-        def __eq__(self, other):
-            return (
-                abs(
-                    self.transaction.milliunit_amount
-                    - other.transaction.milliunit_amount
-                )
-                < 2  # ignore very minor differences in milliunits
-                and abs(self.transaction.date - other.transaction.date).days
-                <= MAX_COMPARE_DAYS
-            )
-
-    def subtract(transactions_c, transactions_d):
-        remaining = transactions_c.copy()
-        for transaction in transactions_d:
-            comparable = Comparable(transaction)
-            comparables = [Comparable(t) for t in remaining]
-            if comparable in comparables:
-                candidates = [c for c in comparables if c == comparable]
-                best_matching_memo, _ = fuzzywuzzy.process.extractOne(
-                    query=transaction.memo,
-                    choices=[c.transaction.memo for c in candidates],
-                )
-                best_match = next(
-                    c for c in candidates if c.transaction.memo == best_matching_memo
-                )
-                remaining.remove(best_match.transaction)
-
-        return remaining
-
-    return (
-        subtract(transactions_a, transactions_b),
-        subtract(transactions_b, transactions_a),
-    )
-
-
-def pretty_format_transactions(transactions: Iterable[Transaction]):
-    def justify(x, width, right=False):
-        string = str(x)
-        if len(string) > width:
-            string = string[0 : width - 4] + "... "
-        if right:
-            return string.rjust(width)
-        else:
-            return string.ljust(width)
-
-    header = ["Date", "Payee", "Memo", "    Amount"]
-    widths = [10, 20, 40, 10]  # each width should be at least 5
-
-    # print header
-    ret = ""
-    for text, width in zip(header, widths):
-        ret += justify(text, width) + " "
-    ret += "\n"
-
-    # print data
-    for transaction in transactions:
-        ret += justify(transaction.date, widths[0]) + " "
-        ret += justify(transaction.payee_name or "", widths[1]) + " "
-        ret += justify(transaction.memo or "", widths[2]) + " "
-        ret += justify(
-            f"{transaction.milliunit_amount / 1000:.2f}", widths[3], right=True
-        )
-        ret += "\n"
-
-    return ret
