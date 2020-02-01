@@ -4,7 +4,6 @@ Pull down and import transaction histories into ynab.
 """
 
 import argparse
-import json
 import os
 import shutil
 import sys
@@ -16,19 +15,17 @@ from pprint import pprint
 from selenium.common.exceptions import TimeoutException, WebDriverException
 
 from ynab import __version__, config_schema
-from ynab.api import (  # norc
-    BANK_DATE_RANGE,
+from ynab.api import BANK_DATE_RANGE, YNAB, TransactionStore  # norc
+from ynab.chrome import Chrome
+from ynab.secrets import Keyring
+from ynab.transactions import (
     MAX_COMPARE_DAYS,
-    YNAB,
-    TransactionStore,
     pretty_format_transactions,
     transactions_difference,
 )
-from ynab.chrome import Chrome
-from ynab.secrets import Keyring
 
+DEFAULT_YNAB_CONFIGURATION = os.path.expanduser("~/.ynab.conf")
 TEMPORARY_DIRECTORY_PARENT = os.path.expanduser("~/Downloads")
-
 Target = namedtuple("BankTarget", ["bank", "budget_id", "account_id"])
 
 
@@ -37,9 +34,9 @@ def _parse_arguments(args):
     parser.add_argument(
         "configuration_file",
         type=str,
-        default=os.path.expanduser("~/.ynab.conf"),
+        default=DEFAULT_YNAB_CONFIGURATION,
         nargs="?",
-        help="defaults to ~/.ynab.conf",
+        help=f"defaults to {DEFAULT_YNAB_CONFIGURATION}",
     )
     parser.add_argument(
         "--headless", action="store_true", help="Do not open a visible browser window"
@@ -85,10 +82,22 @@ def _fetch_transactions_from_bank(
                 shutil.rmtree(download_directory)
 
 
-def main(argv=None):
-    argv = argv or sys.argv[1:]
-    args = _parse_arguments(argv)
+def _detect_mismatches(account_id, budget_id, transaction_store, ynab):
+    ynab_transaction_store = ynab.get(account_id, budget_id)
+    only_on_ynab, only_in_bank = transactions_difference(
+        ynab_transaction_store.transactions, transaction_store.transactions
+    )
 
+    # ignore differences that are too old
+    cutoff_date = date.today() - timedelta(days=BANK_DATE_RANGE - MAX_COMPARE_DAYS)
+    only_on_ynab = [t for t in only_on_ynab if t.date > cutoff_date]
+    only_in_bank = [t for t in only_in_bank if t.date > cutoff_date]
+
+    return only_on_ynab, only_in_bank
+
+
+def main(argv=None):
+    args = _parse_arguments(argv or sys.argv[1:])
     if args.version:
         print(__version__)
         return
@@ -105,37 +114,27 @@ def main(argv=None):
             bank, args.headless, args.no_cleanup, transaction_store
         )
 
-        if transaction_store.count() <= 0:
-            print("No transaction to push")
-        else:
+        if transaction_store.count() > 0:
             print(f"Pushing {transaction_store.count()} transactions to YNAB")
             response = ynab.push(transaction_store, account_id, budget_id)
             if args.verbose:
                 pprint(response.json())
+        else:
+            print("No transaction to push")
 
-            print(f"Checking for mismatches")
-            ynab_transaction_store = ynab.get(account_id, budget_id)
-            with open("/tmp/ynab.json", "w") as file:
-                json.dump(ynab_transaction_store.json(account_id), file)
-            only_on_ynab, only_in_bank = transactions_difference(
-                ynab_transaction_store.transactions, transaction_store.transactions
-            )
+        # check for differences between our bank data and what is on YNAB
+        print(f"Checking for mismatches")
+        only_on_ynab, only_in_bank = _detect_mismatches(
+            account_id, budget_id, transaction_store, ynab
+        )
 
-            # ignore differences that are too old
-            cutoff_date = date.today() - timedelta(
-                days=BANK_DATE_RANGE - MAX_COMPARE_DAYS
-            )
-            only_on_ynab = [t for t in only_on_ynab if t.date > cutoff_date]
-            only_in_bank = [t for t in only_in_bank if t.date > cutoff_date]
-
-            # print any differences to the console
-            if only_on_ynab:
-                print("Extraneous in YNAB:")
-                print(pretty_format_transactions(only_on_ynab))
-
-            if only_in_bank:
-                print("Missing from YNAB:")
-                print(pretty_format_transactions(only_in_bank))
+        # print any differences to the console
+        if only_on_ynab:
+            print("Extraneous in YNAB:")
+            print(pretty_format_transactions(only_on_ynab))
+        if only_in_bank:
+            print("Missing from YNAB:")
+            print(pretty_format_transactions(only_in_bank))
 
 
 if __name__ == "__main__":
